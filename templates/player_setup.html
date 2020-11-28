@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="{{ static_url('style.css') }}">
+</head>
+<body>
+    <script type="text/javascript">
+        function setName() {
+            document.cookie = "name=" + document.getElementById("input_name").value
+            location.reload()
+        }
+    </script>
+
+    <p>Enter your name:</p>
+    <input id="input_name">
+    <button onclick='setName()'>Send</button>
+</body>
+</html>

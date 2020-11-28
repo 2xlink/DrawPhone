@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="{{ static_url('style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<script src="{{ static_url('helpers.js') }}" type="text/javascript"></script>
+<script type="text/javascript">
+    var vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
+    vw = Math.min(vw, 400) - 20
+
+    var sketchpad1
+    var sketchpad2
+    var prompt_input
+    var body
+    var timeout
+    var ws = new WebSocket("ws://www.kumula.me:8888/websocket");
+
+    body = document.body
+    body.style.width = vw + "px"
+
+    ws.onopen = function() {
+        ret = {
+            "token": getCookie("token"),
+            "room_id": findGetParameter("room_id"),
+            "command": "reconnect_check"
+        }
+        ws.send(JSON.stringify(ret))
+    };
+
+    ws.onmessage = function (evt) {
+        console.log(evt.data)
+        data = JSON.parse(evt.data)
+        document.getElementById('div_wait').style.display = "none"
+
+        // First prompt has timeout
+        if ("timeout" in data) {
+            timeout = data["timeout"] * 1000
+        }
+
+        if ("prompt" in data) {
+            document.getElementById('div_draw').style.display = "unset"
+            document.getElementById("prompt_supplied").innerText = data["prompt"]
+            if (timeout != 0) {
+                console.log("Setting drawing timeout to " + timeout)
+                setTimeout(() => sendImage(), timeout)
+            }
+        }
+        else if ("image" in data) {
+        // TODO: clear sketchpads and prompts
+            document.getElementById('div_prompt').style.display = "unset"
+            settings = data["image"]
+            settings.element = '#sketchpad_supplied'
+            supplied_vw = settings.width
+            scale_factor = vw / supplied_vw
+
+            // Scale drawn thing to our vw
+            settings.strokes.forEach(stroke => {
+                stroke.lines.forEach(line => {
+                    line.start.x = scale_factor * line.start.x
+                    line.start.y = scale_factor * line.start.y
+                    line.end.x = scale_factor * line.end.x
+                    line.end.y = scale_factor * line.end.y
+                })
+            })
+
+            settings.width = vw
+            settings.height = vw
+            sketchpad2 = new Sketchpad(settings)
+
+            if (timeout != 0) {
+                console.log("Setting prompt timeout to " + timeout)
+                setTimeout(() => sendPrompt(), timeout)
+            }
+        }
+        else if ("command" in data) {
+            ws.close()
+            if (data["command"] == "reload") {
+                setTimeout(_ => location.reload(), 5000)
+            }
+        }
+    }
+
+    function sendImage() {
+        ret = {
+            "token": getCookie("token"),
+            "room_id": findGetParameter("room_id"),
+            "image": sketchpad1.toObject()
+<!--            "image": document.getElementById('sketchpad_input').toDataURL()-->
+        }
+        ws.send(JSON.stringify(ret))
+
+        document.getElementById('div_draw').style.display = "none"
+        document.getElementById('div_wait').style.display = "unset"
+
+        sketchpad1.clear()
+        // "clear" only clears UI lol
+        sketchpad1 = new Sketchpad({
+          element: '#sketchpad_input',
+          width: vw,
+          height: vw
+        });
+    }
+
+    function sendPrompt() {
+        ret = {
+            "token": getCookie("token"),
+            "room_id": findGetParameter("room_id"),
+            "prompt": prompt_input.value
+        }
+        ws.send(JSON.stringify(ret))
+
+        document.getElementById('div_prompt').style.display = "none"
+        document.getElementById('div_wait').style.display = "unset"
+
+        prompt_input.value = ""
+        // sketchpad2.clear()
+    }
+
+    function change_stroke_color(color) {
+        sketchpad1.color = '#' + color
+    }
+
+    function change_stroke_size(size) {
+        sketchpad1.color = '#' + color
+    }
+</script>
+
+<div id="div_draw" style="display: none">
+    <p class="text_element">It's your turn to draw: <span id="prompt_supplied"></span></p>
+    <canvas class="sketchpad" id="sketchpad_input"></canvas>
+    <div class="draw_tools">
+        <button class="color_button" onclick="change_stroke_color('4CAF50')" style="background-color: #4CAF50;"></button>
+        <button class="color_button" onclick="change_stroke_color('CCFF00')" style="background-color: #CCFF00;"></button>
+        <button class="color_button" onclick="change_stroke_color('33FFFF')" style="background-color: #33FFFF;"></button>
+        <button class="color_button" onclick="change_stroke_color('008CBA')" style="background-color: #008CBA;"></button>
+        <button class="color_button" onclick="change_stroke_color('f44336')" style="background-color: #f44336;"></button>
+        <button class="color_button" onclick="change_stroke_color('FFCC00')" style="background-color: #FFCC00;"></button>
+        <button class="color_button" onclick="change_stroke_color('FFFF33')" style="background-color: #FFFF33;"></button>
+        <button class="color_button" onclick="change_stroke_color('555555')" style="background-color: #555555;"></button>
+<!--        <button class="size_button" onclick="change_stroke_size('5')">-->
+<!--            <img src="{{ static_url('img/0.png') }}"/>-->
+<!--        </button>-->
+<!--        <button class="size_button" onclick="change_stroke_size('10')"></button>-->
+<!--        <button class="size_button" onclick="change_stroke_size('20')"></button>-->
+        </div>
+    <button class="button" onclick=sendImage()>Send</button>
+</div>
+
+<div id="div_prompt" style="display: none">
+    <p class="text_element">Someone drew this image, what could it mean?</p>
+    <canvas class="sketchpad" id="sketchpad_supplied"></canvas>
+    <div></div>
+    <div>
+        <input class="input" id="prompt_input">
+    </div>
+    <button class="button" onclick=sendPrompt()>Send</button>
+</div>
+
+<div id="div_wait">
+    <p class="text_element">Look at the presenter screen</p>
+</div>
+
+<script src="{{ static_url('jquery.min.js') }}" type="text/javascript"></script>
+<script src="{{ static_url('sketchpad.js') }}" type="text/javascript"></script>
+
+<script type="text/javascript">
+    sketchpad1 = new Sketchpad({
+      element: '#sketchpad_input',
+      width: vw,
+      height: vw
+    });
+
+    prompt_input = document.getElementById("prompt_input")
+</script>
+</body>
+</html>

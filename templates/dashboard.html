@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="{{ static_url('style.css') }}">
+</head>
+<body>
+<script src="{{ static_url('helpers.js') }}" type="text/javascript"></script>
+<script type="text/javascript">
+    var vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
+    vw = Math.min(vw, 400) - 20
+
+    const post_game_display_delay = 2000
+    const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
+
+    var body
+    var ws = new WebSocket("ws://www.kumula.me:8888/websocket");
+
+    body = document.body
+    body.style.width = vw + "px"
+
+    ws.onopen = function() {
+        ret = {
+            "token": getCookie("token"),
+            "room_id": findGetParameter("room_id"),
+            "command": "reconnect_check"
+        }
+        ws.send(JSON.stringify(ret))
+    };
+
+    ws.onmessage = function (evt) {
+        console.log(evt.data);
+        data = JSON.parse(evt.data)
+
+        if (data["game_state"] == "1") {
+            root = document.getElementById("pre_game_player_list")
+            root.innerHTML = ""
+            data["players"][1].forEach(p => {
+                d = document.createElement("div")
+                d.classList.add("player", "minor_text_element")
+                d.innerText = p
+                root.appendChild(d)
+            })
+            if (data["players"].length >= 2) document.getElementById("start_button").disabled = false
+        }
+        else if (data["game_state"] == "2") {
+            root_ready = document.getElementById("playing_player_list_ready")
+            root_unready = document.getElementById("playing_player_list_not_ready")
+            title = document.getElementById("playing_title")
+            timeout_element = document.getElementById("timeout_counter")
+
+            root_ready.innerHTML = ""
+            root_unready.innerHTML = ""
+
+            timeout_s = data["timeout"]
+            if (timeout_s != 0) {
+                timeout_element.style.display = "block"
+                for (var i = 0; i < timeout_s; i++) {
+                    (function(j) {
+                        setTimeout(() => {
+                            timeout_element.innerText = timeout_s - j
+                        }, j * 1000)
+                    })(i)
+                }
+            }
+
+            data["players"][0].forEach(p => {
+                d = document.createElement("div")
+                d.classList.add("player", "minor_text_element")
+                d.innerText = p
+                root_ready.appendChild(d)
+            })
+
+            data["players"][1].forEach(p => {
+                d = document.createElement("div")
+                d.classList.add("player", "minor_text_element")
+                d.innerText = p
+                root_unready.appendChild(d)
+            })
+
+            title.innerText = "Round " + data["round_count"] + " of " + data["max_rounds"]
+        }
+        else if (data["game_state"] == "3") {
+            document.getElementById("playing").style.display = "none"
+            document.getElementById("post_game").style.display = "unset"
+            histories = data["histories"]
+            root = document.getElementById("history")
+
+            show_histories(histories)
+        }
+    }
+
+    show_histories = async function(histories) {
+        await sleep(post_game_display_delay)
+        console.log(histories)
+
+        for (i1 = 0; i1 < histories.length; i1++) {
+            hist = histories[i1]
+            console.log(hist)
+
+            for (i2 = 0; i2 < hist.length; i2++) {
+                event_tuple = hist[i2]
+                console.log(event_tuple)
+
+                player_name = event_tuple[0]
+                event = event_tuple[1]
+
+                if (typeof event === "string") {
+                    e = document.createElement("div")
+                    e.innerText = player_name + ': "' + event + '"'
+                    e.classList.add("fade_in", "minor_text_element")
+                    root.appendChild(e)
+                    e.scrollIntoView({ behavior: 'smooth' })
+                }
+                else {
+                    d = document.createElement("div")
+                    d.innerText = player_name + " drew the following"
+
+                    e = document.createElement("canvas")
+                    e.classList.add("sketchpad")
+
+                    d.classList.add("fade_in", "minor_text_element")
+                    e.classList.add("fade_in", "sketchpad")
+                    root.appendChild(d)
+                    root.appendChild(e)
+
+                    settings = event
+                    settings.element = e
+                    supplied_vw = settings.width
+                    scale_factor = vw / supplied_vw
+
+                    // Scale drawn thing to our vw
+                    settings.strokes.forEach(stroke => {
+                        stroke.lines.forEach(line => {
+                            line.start.x = scale_factor * line.start.x
+                            line.start.y = scale_factor * line.start.y
+                            line.end.x = scale_factor * line.end.x
+                            line.end.y = scale_factor * line.end.y
+                        })
+                    })
+
+                    settings.width = vw
+                    settings.height = vw
+                    var sketchpad = new Sketchpad(settings)
+                    sketchpad.animate(2)
+
+                    e.scrollIntoView({ behavior: 'smooth' })
+
+                    await sleep(post_game_display_delay)
+                }
+
+                await sleep(post_game_display_delay)
+            }
+
+            d = document.createElement("div")
+            d.innerText = '"' + hist[0][1] + '" => "' + hist[hist.length-1][1] + '"'
+            d.classList.add("fade_in", "text_element")
+            root.appendChild(d)
+            d.scrollIntoView({ behavior: 'smooth' })
+
+            await sleep(post_game_display_delay * 2)
+        }
+
+        e = document.getElementById("button_start_new_game")
+        e.style.display = "block"
+        e.scrollIntoView({ behavior: 'smooth' })
+    }
+
+    function startGame() {
+        ret = {
+            "token": getCookie("token"),
+            "room_id": findGetParameter("room_id"),
+            "command": "start_game",
+            "timeout": document.getElementById("timeout_input").value
+        }
+        ws.send(JSON.stringify(ret))
+        document.getElementById("pre_game").style.display = "none"
+        document.getElementById("playing").style.display = "unset"
+    }
+
+    function start_new_game() {
+        ret = {
+            "token": getCookie("token"),
+            "room_id": findGetParameter("room_id"),
+            "command": "start_new_game"
+        }
+        ws.send(JSON.stringify(ret))
+        document.getElementById("button_start_new_game").disabled = true
+        setTimeout(_ => location.reload(), 500)
+    }
+</script>
+
+<!-- PREGAME -->
+<div id="pre_game">
+    <p class="title">Connected Players</p>
+    <p id="pre_game_player_list"></p>
+    <input id="timeout_input" class="button" placeholder="Timeout [currently no timeout]" pattern="[0-9]*">
+    <p><button id="start_button" class="button" disabled onclick="startGame()">Start Game</button></p>
+</div>
+
+<!-- PLAYING -->
+<div id="playing" style="display: none">
+    <p id="playing_title" class="title"></p>
+    <p class="title">Look at your device</p>
+    <p class="text_element">Players ready</p>
+    <p id="playing_player_list_ready"></p>
+    <p class="text_element">Players not ready</p>
+    <p id="playing_player_list_not_ready"></p>
+    <div id="timeout_counter" class="text_element" style="display: none;"></div>
+</div>
+
+<!-- POSTGAME -->
+<div id="post_game" style="display: none">
+    <p class="title">Results</p>
+    <div id="history"></div>
+    <p>
+        <button id="button_start_new_game" onclick="start_new_game()"
+                class="fade_in button" style="display: none;">Play again</button>
+    </p>
+</div>
+
+<script src="{{ static_url('jquery.min.js') }}" type="text/javascript"></script>
+<script src="{{ static_url('sketchpad.js') }}" type="text/javascript"></script>
+
+</body>
+</html>
