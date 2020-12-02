@@ -6,6 +6,11 @@
 </head>
 <body>
     <script type="text/javascript">
+        var vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
+        vw = Math.min(vw, 400) - 20
+        body = document.body
+        body.style.width = vw + "px"
+
         function setName() {
             document.cookie = "name=" + document.getElementById("input_name").value
             location.reload()
