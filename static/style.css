@@ -69,6 +69,13 @@ body {
     max-width: 500px;
     margin: auto;
     padding: 10px;
+    font-family: myFont;
+    font-size: "24px";
+}
+
+@font-face {
+  font-family: myFont;
+  src: url(ComicNeue-Regular.ttf);
 }
 
 .fade_in {
