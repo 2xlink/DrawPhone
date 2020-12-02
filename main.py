@@ -188,7 +188,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 
     def check_origin(self, origin: str) -> bool:
         parsed_origin = urllib.parse.urlparse(origin)
-        return parsed_origin.netloc.endswith("kumula.me:8888")
+        return parsed_origin.netloc.endswith("kumula.me")
         # TODO: Change me before prod
         # return True
 

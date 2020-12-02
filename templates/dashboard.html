@@ -14,7 +14,7 @@
     const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
 
     var body
-    var ws = new WebSocket("ws://www.kumula.me:8888/websocket");
+    var ws = new WebSocket("wss://drawphone.kumula.me/websocket");
 
     body = document.body
     body.style.width = vw + "px"
@@ -188,12 +188,53 @@
         document.getElementById("button_start_new_game").disabled = true
         setTimeout(_ => location.reload(), 500)
     }
+
+    function copy_room_to_clipboard() {
+        fallbackCopyTextToClipboard(window.location)
+        document.getElementById("copy_room").innerText = "Copied!"
+    }
+
+    function fallbackCopyTextToClipboard(text) {
+      var textArea = document.createElement("textarea");
+      textArea.value = text;
+
+      // Avoid scrolling to bottom
+      textArea.style.top = "0";
+      textArea.style.left = "0";
+      textArea.style.position = "fixed";
+
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+
+      try {
+        var successful = document.execCommand('copy');
+        var msg = successful ? 'successful' : 'unsuccessful';
+        console.log('Fallback: Copying text command was ' + msg);
+      } catch (err) {
+        console.error('Fallback: Oops, unable to copy', err);
+      }
+
+      document.body.removeChild(textArea);
+    }
+    function copyTextToClipboard(text) {
+      if (!navigator.clipboard) {
+        fallbackCopyTextToClipboard(text);
+        return;
+      }
+      navigator.clipboard.writeText(text).then(function() {
+        console.log('Async: Copying to clipboard was successful!');
+      }, function(err) {
+        console.error('Async: Could not copy text: ', err);
+      });
+}
 </script>
 
 <!-- PREGAME -->
 <div id="pre_game">
     <p class="title">Connected Players</p>
     <p id="pre_game_player_list"></p>
+    <p id="copy_room" class="minor_text_element" onclick="copy_room_to_clipboard()">Click to Copy Room ID</p>
     <input id="timeout_input" class="button" placeholder="Timeout [currently no timeout]" pattern="[0-9]*">
     <p><button id="start_button" class="button" disabled onclick="startGame()">Start Game</button></p>
 </div>
