@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dashboard</title>
+    <title>Drawphone</title>
     <link rel="stylesheet" type="text/css" href="{{ static_url('style.css') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -38,7 +38,7 @@
             root.innerHTML = ""
             data["players"][1].forEach(p => {
                 d = document.createElement("div")
-                d.classList.add("player", "minor_text_element")
+                d.classList.add("player", "text_element")
                 d.innerText = p
                 root.appendChild(d)
             })
