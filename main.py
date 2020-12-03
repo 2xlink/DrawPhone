@@ -256,6 +256,25 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 
                     logging.info(f"Room max count is {room.max_rounds}")
 
+                    # Custom words wanted?
+                    try:
+                        custom_words_selected = bool(parsed["custom_words_selected"])
+                        if custom_words_selected:
+                            logging.info(f"Custom words wanted: {parsed['custom_words']}")
+
+                            words_unparsed = str(parsed["custom_words"])
+                            words = []
+                            for w in words_unparsed.split(","):
+                                words.append(re.sub('[^a-zA-Z0-9 \'"äöüß]', '', w))
+
+                            logging.info(f"Words: {words}")
+
+                            if len(words) >= len(room.players):
+                                room.prompts = words
+
+                    except:
+                        pass
+
                     # Send info to players
                     for player_iter in room.players:
                         player_iter.prompt = room.get_new_prompt()

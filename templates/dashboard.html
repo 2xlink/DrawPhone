@@ -23,6 +23,8 @@
     var rounds_input
     var timeout_started = false
 
+    var custom_words_selected = false
+
     ws.onopen = function() {
         ret = {
             "token": getCookie("token"),
@@ -52,6 +54,9 @@
             rounds_input.placeholder = Math.floor(data["players"][1].length / 2) * 2
         }
         else if (data["game_state"] == "2") {
+            document.getElementById("pre_game").style.display = "none"
+            document.getElementById("playing").style.display = "unset"
+
             root_ready = document.getElementById("playing_player_list_ready")
             root_unready = document.getElementById("playing_player_list_not_ready")
             title = document.getElementById("playing_title")
@@ -190,11 +195,11 @@
             "room_id": findGetParameter("room_id"),
             "command": "start_game",
             "timeout": document.getElementById("timeout_input").value,
-            "round_count": rounds_input.value
+            "round_count": rounds_input.value,
+            "custom_words_selected": custom_words_selected,
+            "custom_words": document.getElementById("custom_wordlist").value
         }
         ws.send(JSON.stringify(ret))
-        document.getElementById("pre_game").style.display = "none"
-        document.getElementById("playing").style.display = "unset"
     }
 
     function start_new_game() {
@@ -214,39 +219,51 @@
     }
 
     function fallbackCopyTextToClipboard(text) {
-      var textArea = document.createElement("textarea");
-      textArea.value = text;
+        var textArea = document.createElement("textarea");
+        textArea.value = text;
 
-      // Avoid scrolling to bottom
-      textArea.style.top = "0";
-      textArea.style.left = "0";
-      textArea.style.position = "fixed";
+        // Avoid scrolling to bottom
+        textArea.style.top = "0";
+        textArea.style.left = "0";
+        textArea.style.position = "fixed";
 
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
 
-      try {
-        var successful = document.execCommand('copy');
-        var msg = successful ? 'successful' : 'unsuccessful';
-        console.log('Fallback: Copying text command was ' + msg);
-      } catch (err) {
-        console.error('Fallback: Oops, unable to copy', err);
-      }
+        try {
+            var successful = document.execCommand('copy');
+            var msg = successful ? 'successful' : 'unsuccessful';
+            console.log('Fallback: Copying text command was ' + msg);
+        } catch (err) {
+            console.error('Fallback: Oops, unable to copy', err);
+        }
 
-      document.body.removeChild(textArea);
+        document.body.removeChild(textArea);
     }
+
     function copyTextToClipboard(text) {
-      if (!navigator.clipboard) {
-        fallbackCopyTextToClipboard(text);
-        return;
-      }
-      navigator.clipboard.writeText(text).then(function() {
-        console.log('Async: Copying to clipboard was successful!');
-      }, function(err) {
-        console.error('Async: Could not copy text: ', err);
-      });
-}
+        if (!navigator.clipboard) {
+            fallbackCopyTextToClipboard(text);
+            return;
+        }
+        navigator.clipboard.writeText(text).then(function() {
+            console.log('Async: Copying to clipboard was successful!');
+        }, function(err) {
+            console.error('Async: Could not copy text: ', err);
+        });
+    }
+
+    function wordlist_change() {
+        if (document.getElementById("wordlist_dropdown").value == "custom") {
+            document.getElementById("custom_wordlist_div").style.display = "block"
+            custom_words_selected = true
+        }
+        else {
+            document.getElementById("custom_wordlist_div").style.display = "none"
+            custom_words_selected = false
+        }
+    }
 </script>
 
 <!-- PREGAME -->
@@ -254,15 +271,28 @@
     <p class="title">Connected Players</p>
     <p id="pre_game_player_list"></p>
     <p id="copy_room" class="minor_text_element" onclick="copy_room_to_clipboard()">Click to Copy Room ID</p>
-    <p class="minor_text_element">
-        Timeout (in seconds)
+    <div class="minor_text_element">
+        Timeout (in Seconds)
         <input id="timeout_input" class="input input_small" placeholder="[No Timeout]" pattern="[0-9]*">
-    </p>
-    <p class="minor_text_element">
-        Max. number of rounds
+    </div>
+    <div class="minor_text_element">
+        Max. Number of Rounds
         <input id="rounds_input" class="input input_small" placeholder="0" min="2" pattern="[0-9]*">
-    </p>
-    <p><button id="start_button" class="button" disabled onclick="startGame()">Start Game</button></p>
+    </div>
+    <div class="minor_text_element">
+        Wordlist to Use<br>
+        <select id="wordlist_dropdown" class="input" name="wordlist_dropdown" onchange="wordlist_change()">
+            <option value="default" selected>Default Words (German)</option>
+            <option value="custom">Custom Words</option>
+            <option value="sexy" disabled>18+ Words (WIP)</option>
+        </select>
+        <div id="custom_wordlist_div" style="display: none;">
+            <input id="custom_wordlist"
+                   placeholder="Pizza Hawaii, Eiffelturm, Vincent van Gogh, …"
+            >
+        </div>
+    </div>
+    <button id="start_button" class="button" disabled onclick="startGame()">Start Game</button></p>
 </div>
 
 <!-- PLAYING -->
