@@ -105,7 +105,6 @@ class MainHandler(tornado.web.RequestHandler):
 
     def get(self):
         room_id_param = self.get_arguments("room_id")
-        logging.info(f"main GET, message is {self}, rooms are {rooms}")
         logging.info(f"main GET, rooms are {rooms}")
 
         # Delete rooms which were not accessed in the last 10 minutes
@@ -191,8 +190,6 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
     def check_origin(self, origin: str) -> bool:
         parsed_origin = urllib.parse.urlparse(origin)
         return parsed_origin.netloc.endswith("kumula.me")
-        # TODO: Change me before prod
-        # return True
 
     def data_received(self, chunk: bytes) -> Optional[Awaitable[None]]:
         pass
