@@ -60,15 +60,7 @@ class Room:
         self.round_count = 1
         self.current_task_is_drawing = True
         self.histories = []
-        self.prompts = ["Buch", "Kino", "Konzert", "Obama", "Der Durchschnittsinformatiker", "Der Nerd",
-                   "Schlittschuhlaufen", "LKW", "Kokosnuss", "Asiate", "Zug", "Kartoffel", "Among Us", "Apfel", "Birne",
-                   "Banane", "Spaghetti", "Wasser", "Bier", "Flugzeug", "Schiff", "Orange", "Wassermelone", "Tisch",
-                   "Schrank", "Auto", "Maus", "Giraffe", "Krankenhaus", "Kran", "Wasserhahn", "Propeller", "Muschel",
-                   "Mond", "Erde", "Fließband", "Fabrik", "Sklaverei", "Krabbe", "Geschwindigkeitsmesser", "Wohnwagen",
-                   "Kirchenschiff", "Flammenwerfer", "Bettdecke", "Selbstbedienung", "Torpedo", "Professur",
-                   "Reagenzglas", "Laryngitis", "Deportieren", "Wandschrank", "Luftpumpe", "Röhrenfernseher", "Erdnuss",
-                   "Räuchermännchen", "Haferflocken", "Sofa", "Sessel", "Handwerker", "Info-Fakultätsspezifisches",
-                   "Dorffest", "Prof. Weber", "Käsefest"]
+        self.prompts = ["Buch", "Kino", "Konzert", "Obama", "Trump", "John F. Kennedy", "Tortenheber", "Tokyo", "Super Mario", "Fleischbällchen", "Glühbirne", "Lagerfeuer", "Walgesang", "World of Warcraft", "Teenager", "Schnuller", "Mettbrötchen", "Gulaschkanone", "Grundstück", "Riesenrad", "Mindmühle", "Zelda", "Vorhang", "Holzbein", "Rum", "Mayatempel", "Weltwunder", "Schneeballschlacht", "Informatiker*in", "Der Nerd", "Schlittschuhlaufen", "LKW", "Kokosnuss", "Zug", "Kartoffel", "Among Us", "Apfel", "Birne", "Banane", "Spaghetti", "Wasser", "Bier", "Flugzeug", "Schiff", "Orange", "Wassermelone", "Maus", "Giraffe", "Krankenhaus", "Kran", "Wasserhahn", "Propeller", "Muschel", "Mond", "Erde", "Fließband", "Fabrik", "Sklaverei", "Krabbe", "Geschwindigkeitsmesser/Tacho", "Wohnwagen", "Kirchenschiff", "Flammenwerfer", "Bettdecke", "Selbstbedienung", "Torpedo", "Professur", "Reagenzglas", "Deportieren", "Wandschrank", "Luftpumpe", "Röhrenfernseher", "Erdnuss", "Räuchermännchen", "Haferflocken", "Sofa", "Sessel", "Handwerker", "Dorffest", "Prof. Weber", "Käsefest", "Heißluftballon", "Mars", "Kaktus", "Schnee", "Nagellack", "Blau", "Walnuss", "IKEA", "Gehirn", "Standuhr", "Stau", "Sims", "Marge Simpson", "Papagei", "Schwarzes Loch", "Familie", "Chor", "Kuchen", "Rakete", "Finland", "Eiffelturm", "Marienkäfer", "Kopfhörer", "Pullover", "Toilette", "Das Krümelmonster", "Kran", "Park", "Schlaf", "Skifahren", "Atompilz", "Abfall", "Zoo", "Frühstück", "Koordinatensystem", "Verschwörungstheorie", "Blutvergiftung", "Mango", "Sandale", "Mittwoch", "Motorboot", "Überbevölkerung", "Schneidezahn", "Pullover", "Fieber", "Pickel", "Schlüsselbund", "Zahnrad", "Sechseck", "Pelikan", "Foto", "Sonnenblume", "Südpol", "Europa", "Pirat", "Wimpern", "Rechnungen", "Lasagne", "Konflikt", "Weihnachtsmann", "Hawaii", "Gladiator", "Dunkelheit", "Katastrophe", "Mais", "Machete", "Perle", "Elastisch", "weltall", "sonne", "wasser", "meer", "surfer", "angela merkel", "aluhut", "congress", "idee", "rasen", "Brokoli", "wikipedia", "youtube", "google", "sex", "LSD"]
         random.shuffle(self.prompts)
         self.timeout = 0
         self.last_access = datetime.datetime.now()
