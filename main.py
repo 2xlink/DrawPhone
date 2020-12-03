@@ -260,7 +260,9 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 
                         except SyntaxError:
                             room.max_rounds = (len(room.players) // 2) * 2
-                            
+                    else:
+                        room.max_rounds = (len(room.players) // 2) * 2
+
                     logging.info(f"Room max count is {room.max_rounds}")
 
                     # Send info to players
