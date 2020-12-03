@@ -247,11 +247,11 @@
     <p id="copy_room" class="minor_text_element" onclick="copy_room_to_clipboard()">Click to Copy Room ID</p>
     <p class="minor_text_element">
         Timeout (in seconds)
-        <input id="timeout_input" class="input" placeholder="[No timeout]" pattern="[0-9]*">
+        <input id="timeout_input" class="input input_small" placeholder="[No timeout]" pattern="[0-9]*">
     </p>
     <p class="minor_text_element">
         Max. number of rounds
-        <input id="rounds_input" class="input" placeholder="0" min="2" pattern="[0-9]*">
+        <input id="rounds_input" class="input input_small" placeholder="0" min="2" pattern="[0-9]*">
     </p>
     <p><button id="start_button" class="button" disabled onclick="startGame()">Start Game</button></p>
 </div>
@@ -275,12 +275,13 @@
         <button id="button_start_new_game" onclick="start_new_game()"
                 class="fade_in button" style="display: none;">Play again</button>
     </p>
-
-    rounds_input = document.getElementById("rounds_input")
 </div>
 
 <script src="{{ static_url('jquery.min.js') }}" type="text/javascript"></script>
 <script src="{{ static_url('sketchpad.js') }}" type="text/javascript"></script>
+<script type="text/javascript">
+    rounds_input = document.getElementById("rounds_input")
+</script>
 
 </body>
 </html>
