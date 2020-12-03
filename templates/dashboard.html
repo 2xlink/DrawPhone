@@ -60,21 +60,21 @@
             root_ready.innerHTML = ""
             root_unready.innerHTML = ""
 
-<!--            if (data["players"][0].length == 0) {-->
-<!--                timeout_started = false-->
-<!--            }-->
+            if (data["players"][0].length == 0) {
+                timeout_started = false
+            }
 
             timeout_s = data["timeout"]
             timeout_element.innerText = timeout_s
 
             if (!timeout_started) {
                 timeout_started = true
-                
+
                 if (timeout_s != 0) {
                     timeout_element.style.display = "block"
                     f = async function(timeout_s) {
-                        for (i = 0; i < timeout_s; i++) {
-                            timeout_element.innerText = timeout_s - i
+                        while (true) {
+                            timeout_element.innerText = timeout_element.innerText - 1
                             await sleep(1000)
                         }
                     }
