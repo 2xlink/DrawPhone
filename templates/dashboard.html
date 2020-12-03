@@ -62,11 +62,11 @@
             timeout_s = data["timeout"]
             if (timeout_s != 0) {
                 timeout_element.style.display = "block"
-                
-                var f = async function(timeout_s) {
+
+                f = async function(timeout_s) {
                     for (i = 0; i < timeout_s; i++) {
                         timeout_element.innerText = timeout_s - i
-                        async sleep(1000)
+                        await sleep(1000)
                     }
                 }
 
