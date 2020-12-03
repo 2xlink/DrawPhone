@@ -59,6 +59,20 @@
     margin: auto;
 }
 
+.button_in_div {
+    display: block;
+    margin: auto;
+    margin-top: 5px;
+}
+
+.input {
+    display: block;
+    margin: auto;
+    width: 100px;
+    text-align: center;
+    margin-top: 5px;
+}
+
 .input {
     display: block;
     margin: auto;

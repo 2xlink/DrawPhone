@@ -236,7 +236,10 @@
     <p class="title">Connected Players</p>
     <p id="pre_game_player_list"></p>
     <p id="copy_room" class="minor_text_element" onclick="copy_room_to_clipboard()">Click to Copy Room ID</p>
-    <input id="timeout_input" class="button" placeholder="Timeout [currently no timeout]" pattern="[0-9]*">
+    <p class="minor_text_element">
+        Timeout (in seconds)
+        <input id="timeout_input" class="input" placeholder="[No timeout]" pattern="[0-9]*">
+    </p>
     <p><button id="start_button" class="button" disabled onclick="startGame()">Start Game</button></p>
 </div>
 
