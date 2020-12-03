@@ -293,6 +293,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                         }
                         WebSocketHandler.send_updates(p.token, message)
                     logging.info(f"Reloading game with room_id {parsed['room_id']}")
+                    del rooms[parsed["room_id"]]
 
         else:
             # Check if a player sent a message
@@ -351,10 +352,6 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                         "histories": room.histories
                     }
                     WebSocketHandler.send_updates(room.presenter.token, message)
-
-                    # Game done on server, delete it
-                    # TODO: Keep players somewhere, so their site can be refreshed
-                    del rooms[parsed["room_id"]]
 
                     return
 
