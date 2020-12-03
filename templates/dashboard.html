@@ -20,11 +20,14 @@
     body = document.body
     body.style.width = vw + "px"
 
+    var rounds_input = document.getElementById("rounds_input")
+
     ws.onopen = function() {
         ret = {
             "token": getCookie("token"),
             "room_id": findGetParameter("room_id"),
-            "command": "reconnect_check"
+            "command": "reconnect_check",
+            "rounds": rounds_input.value
         }
         ws.send(JSON.stringify(ret))
     };
@@ -43,6 +46,9 @@
                 root.appendChild(d)
             })
             if (data["players"].length >= 2) document.getElementById("start_button").disabled = false
+
+            // Update max rounds input
+            d.placeholder = Math.floor(data["players"].length / 2) * 2
         }
         else if (data["game_state"] == "2") {
             root_ready = document.getElementById("playing_player_list_ready")
@@ -239,6 +245,10 @@
     <p class="minor_text_element">
         Timeout (in seconds)
         <input id="timeout_input" class="input" placeholder="[No timeout]" pattern="[0-9]*">
+    </p>
+    <p class="minor_text_element">
+        Max. number of rounds
+        <input id="rounds_input" class="input" placeholder="0" min="2" pattern="[0-9]*">
     </p>
     <p><button id="start_button" class="button" disabled onclick="startGame()">Start Game</button></p>
 </div>

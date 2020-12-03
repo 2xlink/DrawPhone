@@ -71,12 +71,7 @@
     width: 100px;
     text-align: center;
     margin-top: 5px;
-}
-
-.input {
-    display: block;
-    margin: auto;
-    margin-bottom: 20px;
+    margin-bottom: 5px;
 }
 
 body {

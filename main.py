@@ -72,6 +72,7 @@ class Room:
         random.shuffle(self.prompts)
         self.timeout = 0
         self.last_access = datetime.datetime.now()
+        self.max_rounds = 0
 
     def get_new_prompt(self):
         return self.prompts.pop()
@@ -252,6 +253,18 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                         except SyntaxError:
                             pass
 
+                    # Set max amount of rounds
+                    if not parsed["rounds"] == "":
+                        try:
+                            rounds = int(parsed["rounds"])
+                            if rounds <= 1 or rounds >= (len(room.players) // 2) * 2:
+                                room.max_rounds = (len(room.players) // 2) * 2
+                            else:
+                                room.max_rounds = rounds
+
+                        except SyntaxError:
+                            room.max_rounds = (len(room.players) // 2) * 2
+
                     # Send info to players
                     for player_iter in room.players:
                         player_iter.prompt = room.get_new_prompt()
@@ -314,7 +327,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 
                 # Last round if round threshold reached
                 logging.info(f"Room count: {room.round_count}")
-                if room.round_count >= (len(room.players) // 2) * 2:
+                if room.round_count >= room.max_rounds:
                     logging.info("Round count reached")
                     # Get last prompt
                     player.prompt = parsed["prompt"]
