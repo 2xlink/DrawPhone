@@ -62,13 +62,15 @@
             timeout_s = data["timeout"]
             if (timeout_s != 0) {
                 timeout_element.style.display = "block"
-                for (var i = 0; i < timeout_s; i++) {
-                    (function(j) {
-                        setTimeout(() => {
-                            timeout_element.innerText = timeout_s - j
-                        }, j * 1000)
-                    })(i)
+                
+                var f = async function(timeout_s) {
+                    for (i = 0; i < timeout_s; i++) {
+                        timeout_element.innerText = timeout_s - i
+                        async sleep(1000)
+                    }
                 }
+
+                f(timeout_s)
             }
 
             data["players"][0].forEach(p => {
