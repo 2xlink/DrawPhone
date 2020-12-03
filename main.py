@@ -151,12 +151,7 @@ class MainHandler(tornado.web.RequestHandler):
                 for p in room.players:
                     if p.token == self.get_cookie("token"):
                         self.render("game.html")
-                        # Update Presenter UI
-                        message = {
-                            "game_state": room.game_state,
-                            "players": [p.name for p in room.players]
-                        }
-                        WebSocketHandler.send_updates(room.presenter.token, message)
+                        update_dashboard(room)
                         return
 
                 name = self.get_cookie("name")
