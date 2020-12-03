@@ -21,6 +21,7 @@
     body.style.width = vw + "px"
 
     var rounds_input
+    var timeout_started = false
 
     ws.onopen = function() {
         ret = {
@@ -59,18 +60,21 @@
             root_ready.innerHTML = ""
             root_unready.innerHTML = ""
 
-            timeout_s = data["timeout"]
-            if (timeout_s != 0) {
-                timeout_element.style.display = "block"
+            if (!timeout_started) {
+                timeout_started = true
+                timeout_s = data["timeout"]
+                if (timeout_s != 0) {
+                    timeout_element.style.display = "block"
 
-                f = async function(timeout_s) {
-                    for (i = 0; i < timeout_s; i++) {
-                        timeout_element.innerText = timeout_s - i
-                        await sleep(1000)
+                    f = async function(timeout_s) {
+                        for (i = 0; i < timeout_s; i++) {
+                            timeout_element.innerText = timeout_s - i
+                            await sleep(1000)
+                        }
                     }
-                }
 
-                f(timeout_s)
+                    f(timeout_s)
+                }
             }
 
             data["players"][0].forEach(p => {
