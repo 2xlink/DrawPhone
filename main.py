@@ -3,6 +3,7 @@ from typing import Optional, Awaitable, Dict, List
 from enum import Enum
 import random
 import re
+import datetime
 
 import logging
 import tornado.escape
@@ -70,6 +71,7 @@ class Room:
                    "Dorffest", "Prof. Weber", "Käsefest"]
         random.shuffle(self.prompts)
         self.timeout = 0
+        self.last_access = datetime.datetime.now()
 
     def get_new_prompt(self):
         return self.prompts.pop()
@@ -113,6 +115,15 @@ class MainHandler(tornado.web.RequestHandler):
         logging.info(f"main GET, message is {self}, rooms are {rooms}")
         logging.info(f"main GET, rooms are {rooms}")
 
+        # Delete rooms which were not accessed in the last 10 minutes
+        rooms_to_delete = []
+        for room_id in rooms:
+            if datetime.datetime.now() - rooms[room_id].last_access > datetime.timedelta(minutes=10):
+                logging.info(f"Room {rooms[room_id]} not accessed for at least 10 minutes. Deleting …")
+                rooms_to_delete += room_id
+        for r in rooms_to_delete:
+            del rooms[r]
+
         # If room id supplied, create room or join it
         if len(room_id_param) == 1:
             room_id = room_id_param[0]
@@ -128,6 +139,7 @@ class MainHandler(tornado.web.RequestHandler):
                 logging.info(f"Rooms after creating new: {rooms}")
             else:
                 room = rooms.get(room_id)
+                room.last_access = datetime.datetime.now()
 
                 # Check if presenter just refreshed the page
                 if room.presenter.token == self.get_cookie("token"):
@@ -222,6 +234,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
             logging.info("Room not found")
             return
         room = rooms.get(parsed["room_id"])
+        room.last_access = datetime.datetime.now()
 
         if room.presenter.token == parsed["token"]:
             if room.game_state is GameState.PREGAME:
