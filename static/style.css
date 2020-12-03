@@ -68,10 +68,13 @@
 .input {
     display: block;
     margin: auto;
-    width: 100px;
     text-align: center;
     margin-top: 5px;
     margin-bottom: 5px;
+}
+
+#timeout_input {
+    width: 100px;
 }
 
 body {

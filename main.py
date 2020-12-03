@@ -249,9 +249,9 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                             pass
 
                     # Set max amount of rounds
-                    if not parsed["rounds"] == "":
+                    if not parsed["round_count"] == "":
                         try:
-                            rounds = int(parsed["rounds"])
+                            rounds = int(parsed["round_count"])
                             if rounds <= 1 or rounds >= (len(room.players) // 2) * 2:
                                 room.max_rounds = (len(room.players) // 2) * 2
                             else:
