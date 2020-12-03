@@ -252,6 +252,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                     if not parsed["round_count"] == "":
                         try:
                             rounds = int(parsed["round_count"])
+                            logging.info(f"provided rounds: {rounds}")
                             if rounds <= 1 or rounds >= (len(room.players) // 2) * 2:
                                 room.max_rounds = (len(room.players) // 2) * 2
                             else:
@@ -259,6 +260,8 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 
                         except SyntaxError:
                             room.max_rounds = (len(room.players) // 2) * 2
+                            
+                    logging.info(f"Room max count is {room.max_rounds}")
 
                     # Send info to players
                     for player_iter in room.players:
@@ -321,7 +324,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                         return
 
                 # Last round if round threshold reached
-                logging.info(f"Room count: {room.round_count}")
+                logging.info(f"Room count: {room.round_count} of {room.max_rounds}")
                 if room.round_count >= room.max_rounds:
                     logging.info("Round count reached")
                     # Get last prompt
