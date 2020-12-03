@@ -46,7 +46,7 @@
                 d.innerText = p
                 root.appendChild(d)
             })
-            if (data["players"].length >= 2) document.getElementById("start_button").disabled = false
+            if (data["players"][1].length >= 2) document.getElementById("start_button").disabled = false
 
             // Update max rounds input
             rounds_input.placeholder = Math.floor(data["players"][1].length / 2) * 2
