@@ -115,7 +115,8 @@ class MainHandler(tornado.web.RequestHandler):
                 logging.info(f"Room {rooms[room_id]} not accessed for at least 10 minutes. Deleting …")
                 rooms_to_delete += room_id
         for r in rooms_to_delete:
-            del rooms[r]
+            if r in rooms:
+                del rooms[r]
 
         # If room id supplied, create room or join it
         if len(room_id_param) == 1:
