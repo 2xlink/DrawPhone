@@ -117,7 +117,7 @@ class MainHandler(tornado.web.RequestHandler):
         for r in rooms_to_delete:
             if r in rooms:
                 del rooms[r]
-        logging.info(f"Current rooms are: {[r for r in rooms]})")
+        logging.info(f"Current rooms are: {[r for r in rooms]}")
 
         # If room id supplied, create room or join it
         if len(room_id_param) == 1:
