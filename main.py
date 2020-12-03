@@ -111,7 +111,7 @@ class MainHandler(tornado.web.RequestHandler):
         # Delete rooms which were not accessed in the last 10 minutes
         rooms_to_delete = []
         for room_id in rooms:
-            if datetime.datetime.now() - rooms[room_id].last_access > datetime.timedelta(seconds=10):
+            if datetime.datetime.now() - rooms[room_id].last_access > datetime.timedelta(minutes=10):
                 logging.info(f"Room {room_id} not accessed for at least 10 minutes (was {rooms[room_id]})")
                 rooms_to_delete.append(room_id)
         for r in rooms_to_delete:
