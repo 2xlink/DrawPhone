@@ -245,7 +245,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                     if not parsed["timeout"] == "":
                         try:
                             room.timeout = int(parsed["timeout"])
-                        except SyntaxError:
+                        except:
                             pass
 
                     # Set max amount of rounds
@@ -258,7 +258,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                             else:
                                 room.max_rounds = rounds
 
-                        except SyntaxError:
+                        except:
                             room.max_rounds = (len(room.players) // 2) * 2
                     else:
                         room.max_rounds = (len(room.players) // 2) * 2
