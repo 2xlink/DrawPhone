@@ -49,7 +49,7 @@
             if (data["players"].length >= 2) document.getElementById("start_button").disabled = false
 
             // Update max rounds input
-            rounds_input.placeholder = Math.floor(data["players"].length / 2) * 2
+            rounds_input.placeholder = Math.floor(data["players"][1].length / 2) * 2
         }
         else if (data["game_state"] == "2") {
             root_ready = document.getElementById("playing_player_list_ready")
