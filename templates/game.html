@@ -16,6 +16,7 @@
     var prompt_input
     var body
     var timeout
+    var timeout_function
     var ws = new WebSocket("wss://drawphone.kumula.me/websocket");
 
     body = document.body
@@ -45,7 +46,7 @@
             document.getElementById("prompt_supplied").innerText = data["prompt"]
             if (timeout != 0) {
                 console.log("Setting drawing timeout to " + timeout)
-                setTimeout(() => sendImage(), timeout)
+                timeout_function = setTimeout(() => sendImage(), timeout)
             }
         }
         else if ("image" in data) {
@@ -72,7 +73,7 @@
 
             if (timeout != 0) {
                 console.log("Setting prompt timeout to " + timeout)
-                setTimeout(() => sendPrompt(), timeout)
+                timeout_function = setTimeout(() => sendPrompt(), timeout)
             }
         }
         else if ("command" in data) {
@@ -102,6 +103,10 @@
           width: vw,
           height: vw
         });
+
+        if (typeof timeout_function !== undefined) {
+            clearTimeout(timeout_function);
+        }
     }
 
     function sendPrompt() {
@@ -117,6 +122,10 @@
 
         prompt_input.value = ""
         // sketchpad2.clear()
+
+        if (typeof timeout_function !== undefined) {
+            clearTimeout(timeout_function);
+        }
     }
 
     function change_stroke_color(color) {
