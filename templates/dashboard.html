@@ -60,12 +60,11 @@
             root_ready.innerHTML = ""
             root_unready.innerHTML = ""
 
-            if (data["players"][0].length == 0) {
-                timeout_started = false
-            }
-
             timeout_s = data["timeout"]
-            timeout_element.innerText = timeout_s
+
+            if (data["players"][0].length == 0) {
+                timeout_element.innerText = timeout_s
+            }
 
             if (!timeout_started) {
                 timeout_started = true
