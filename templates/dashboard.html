@@ -48,7 +48,7 @@
             if (data["players"].length >= 2) document.getElementById("start_button").disabled = false
 
             // Update max rounds input
-            d.placeholder = Math.floor(data["players"].length / 2) * 2
+            rounds_input.placeholder = Math.floor(data["players"].length / 2) * 2
         }
         else if (data["game_state"] == "2") {
             root_ready = document.getElementById("playing_player_list_ready")
@@ -180,7 +180,8 @@
             "token": getCookie("token"),
             "room_id": findGetParameter("room_id"),
             "command": "start_game",
-            "timeout": document.getElementById("timeout_input").value
+            "timeout": document.getElementById("timeout_input").value,
+            "round_count": rounds_input.value
         }
         ws.send(JSON.stringify(ret))
         document.getElementById("pre_game").style.display = "none"
