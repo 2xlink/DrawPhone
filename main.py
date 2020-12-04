@@ -250,7 +250,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                             if rounds <= 1 or rounds >= (len(room.players) // 2) * 2:
                                 room.max_rounds = (len(room.players) // 2) * 2
                             else:
-                                room.max_rounds = rounds
+                                room.max_rounds = (rounds // 2) * 2
 
                         except:
                             room.max_rounds = (len(room.players) // 2) * 2
