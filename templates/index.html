@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
+<script src="{{ static_url('helpers.js') }}" type="text/javascript"></script>
 
 <script type="text/javascript">
     var vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
@@ -13,8 +14,16 @@
     body = document.body
     body.style.width = vw + "px"
 
+    existing_rooms = unescape("{{ existing_rooms }}")
+
     function create_game() {
-        window.location = "//drawphone.kumula.me/?room_id=" + Math.floor(Math.random() * 1000000)
+        while(true) {
+            code = Math.floor(Math.random() * 1000000)
+            if (existing_rooms.indexOf(code) == -1) {
+                window.location = "//drawphone.kumula.me/?room_id=" + code
+                break;
+            }
+        }
     }
 </script>
 
