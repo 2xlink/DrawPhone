@@ -147,8 +147,8 @@ class MainHandler(tornado.web.RequestHandler):
                         return
 
                 # If the game is already running, skip everything else
-                #if room.game_state != GameState.PREGAME:
-                #    return
+                if room.game_state != GameState.PREGAME:
+                    return
 
                 name = self.get_cookie("name")
                 if name is None:
