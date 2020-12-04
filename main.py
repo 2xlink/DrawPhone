@@ -268,7 +268,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                             words_unparsed = str(parsed["custom_words"])
                             words = []
                             for w in words_unparsed.split(","):
-                                words.append(re.sub('[^a-zA-Z0-9 \'"äöüß]', '', w))
+                                words.append(re.sub('[^a-zA-Z0-9 \'"äöüß]', '', w.strip()))
 
                             logging.info(f"Words: {words}")
 
