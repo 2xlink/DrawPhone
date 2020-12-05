@@ -20,7 +20,7 @@
         while(true) {
             code = Math.floor(Math.random() * 1000000)
             if (existing_rooms.indexOf(code) == -1) {
-                window.location = "//{{ host }}/?room_id=" + code
+                window.location = "/?room_id=" + code
                 break;
             }
         }
