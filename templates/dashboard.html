@@ -28,8 +28,6 @@
     var rounds_input
     var timeout_started = false
 
-    var custom_words_selected = false
-
     ws.onopen = function() {
         ret = {
             "token": getCookie("token"),
@@ -201,7 +199,7 @@
             "command": "start_game",
             "timeout": document.getElementById("timeout_input").value,
             "round_count": rounds_input.value,
-            "custom_words_selected": custom_words_selected,
+            "wordlist_chosen": document.getElementById("wordlist_dropdown").value,
             "custom_words": document.getElementById("custom_wordlist").value
         }
         ws.send(JSON.stringify(ret))
@@ -262,11 +260,9 @@
     function wordlist_change() {
         if (document.getElementById("wordlist_dropdown").value == "custom") {
             document.getElementById("custom_wordlist_div").style.display = "block"
-            custom_words_selected = true
         }
         else {
             document.getElementById("custom_wordlist_div").style.display = "none"
-            custom_words_selected = false
         }
     }
 </script>
@@ -287,7 +283,8 @@
     <div class="minor_text_element">
         Wordlist to Use<br>
         <select id="wordlist_dropdown" class="input" name="wordlist_dropdown" onchange="wordlist_change()">
-            <option value="default" selected>Default Words (German)</option>
+            <option value="default" selected>Simple Words (German)</option>
+            <option value="advanced" selected>Advanced Words (German)</option>
             <option value="custom">Custom Words</option>
             <option value="sexy" disabled>18+ Words (WIP)</option>
         </select>

@@ -61,7 +61,7 @@ class Room:
         self.round_count = 1
         self.current_task_is_drawing = True
         self.histories = []
-        self.prompts = ["Buch", "Kino", "Konzert", "Obama", "Trump", "Tortenheber", "Tokyo", "Super Mario", "Fleischbällchen", "Glühbirne", "Lagerfeuer", "Walgesang", "World of Warcraft", "Philosoph", "Lotterie", "Schwamm", "Podium", "Stadion", "Bettler", "Kunde", "Einhorn", "Kittel", "Fett", "Liegeplatz", "Asche", "Jagd", "Wolkenkratzer", "Sandburg", "Meer", "Sonnenuntergang", "Weltreise", "Kotztüte", "Biene", "Rollschuhe", "Virus", "Kissen", "Minirock", "Krieg", "Klatschen", "Zensur", "Flugblatt", "Bienenstock", "Stroh", "Instantnudeln", "Heimwerker", "Tokio Hotel", "Jackie Chan", "Drawphone", "Du (ja, du sollst dich malen)", "Unterwäsche", "Riese", "Gartenzwerg", "Zeichnung", "Hochzeit", "Hochzeitstorte", "Wahrsager", "Tauchen", "Holzfäller", "Snape", "Totem", "Sieger", "Trommel", "Schlagzeug", "Schatten", "Quidditch", "Kleingeld", "Teenager", "Schnuller", "Mettbrötchen", "Gulaschkanone", "Grundstück", "Riesenrad", "Mindmühle", "Zelda", "Vorhang", "Holzbein", "Rum", "Mayatempel", "Weltwunder", "Schneeballschlacht", "Informatiker*in", "Der Nerd", "Schlittschuhlaufen", "LKW", "Kokosnuss", "Zug", "Kartoffel", "Among Us", "Apfel", "Birne", "Banane", "Spaghetti", "Wasser", "Bier", "Flugzeug", "Schiff", "Orange", "Wassermelone", "Maus", "Giraffe", "Krankenhaus", "Kran", "Wasserhahn", "Propeller", "Muschel", "Mond", "Erde", "Fließband", "Fabrik", "Sklaverei", "Krabbe", "Geschwindigkeitsmesser/Tacho", "Wohnwagen", "Kirchenschiff", "Flammenwerfer", "Bettdecke", "Selbstbedienung", "Torpedo", "Professur", "Reagenzglas", "Deportieren", "Wandschrank", "Luftpumpe", "Röhrenfernseher", "Erdnuss", "Räuchermännchen", "Haferflocken", "Sofa", "Sessel", "Handwerker", "Dorffest", "Prof. Weber", "Käsefest", "Heißluftballon", "Mars", "Kaktus", "Schnee", "Nagellack", "Blau", "Walnuss", "IKEA", "Gehirn", "Standuhr", "Stau", "Sims", "Marge Simpson", "Papagei", "Schwarzes Loch", "Familie", "Chor", "Kuchen", "Rakete", "Finland", "Eiffelturm", "Marienkäfer", "Kopfhörer", "Pullover", "Toilette", "Das Krümelmonster", "Kran", "Park", "Schlaf", "Skifahren", "Atompilz", "Abfall", "Zoo", "Frühstück", "Verschwörungstheorie", "Blutvergiftung", "Mango", "Sandale", "Mittwoch", "Motorboot", "Überbevölkerung", "Schneidezahn", "Pullover", "Fieber", "Pickel", "Schlüsselbund", "Zahnrad", "Sechseck", "Pelikan", "Foto", "Sonnenblume", "Südpol", "Europa", "Einsamkeit", "Durchfall", "Pirat", "Wimpern", "Rechnungen", "Lasagne", "Konflikt", "Weihnachtsmann", "Hawaii", "Gladiator", "Dunkelheit", "Katastrophe", "Mais", "Machete", "Perle", "Elastisch", "Weltall", "Sonne", "Wasser", "Meer", "Surfer", "Angela merkel", "Aluhut", "Kongress", "Idee", "Rasen", "Brokkoli", "Wikipedia", "Youtube", "Google"]
+        self.prompts = []
         self.timeout = 0
         self.last_access = datetime.datetime.now()
         self.max_rounds = 0
@@ -260,12 +260,18 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 
                     logging.info(f"Room max count is {room.max_rounds}")
 
-                    # Custom words wanted?
-                    try:
-                        custom_words_selected = bool(parsed["custom_words_selected"])
-                        if custom_words_selected:
-                            logging.info(f"Custom words wanted: {parsed['custom_words']}")
+                    # Load wordlist
+                    # Set default first
+                    load_wordlist_from_file(room, "simple.txt")
 
+                    try:
+                        wordlist_chosen = parsed["wordlist_chosen"]
+                        logging.info(f"Chosen word list: {wordlist_chosen}")
+
+                        if wordlist_chosen == "advanced":
+                            load_wordlist_from_file(room, "advanced.txt")
+
+                        elif wordlist_chosen == "custom":
                             words_unparsed = str(parsed["custom_words"])
                             words = []
                             for w in words_unparsed.split(","):
@@ -277,6 +283,8 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                                 room.prompts = words
                     except:
                         pass
+
+                    logging.info(f"Words loaded: {room.prompts}")
 
                     random.shuffle(room.prompts)
 
@@ -440,12 +448,14 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                 logging.info(f"After shifting Histories: {room.histories}")
 
 
-# def push_history(room, event):
-#     room.histories[room.round_count]
+def load_wordlist_from_file(room: Room, file_name: str):
+    room.prompts = []
+    with open("words/" + file_name) as f:
+        for line in f:
+            room.prompts.append(line)
 
 def main():
     tornado.options.parse_command_line()
-    print(tornado.options.options.as_dict().get('host'))
     app = Application()
     app.listen(options.port)
     tornado.ioloop.IOLoop.current().start()
