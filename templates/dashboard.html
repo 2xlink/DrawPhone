@@ -362,6 +362,10 @@
         wordlist_chosen = "default"
     }
 
+    if (allow_history_logging == null) {
+        allow_history_logging = true
+    }
+
     try {
         document.getElementById("timeout_input").value = timeout
         rounds_input.value = round_count
