@@ -4,6 +4,7 @@ from enum import Enum
 import random
 import re
 import datetime
+import os
 
 import logging
 import tornado.escape
@@ -382,6 +383,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                     }
                     WebSocketHandler.send_updates(room.presenter.token, message)
 
+                    dump_histories_to_file(room.histories)
                     return
 
                 elif room.current_task_is_drawing:
@@ -451,7 +453,18 @@ def load_wordlist_from_file(room: Room, file_name: str):
     room.prompts = []
     with open("words/" + file_name) as f:
         for line in f:
-            room.prompts.append(line)
+            room.prompts.append(line.strip())
+
+
+def dump_histories_to_file(histories):
+    if not os.path.exists('history_dumps'):
+        os.makedirs('history_dumps')
+
+    filename = "history_dumps/" + \
+               str(datetime.datetime.now()).replace(" ", "_").replace(":", "-") + ".txt"
+    with open(filename, "x") as f:
+        f.write(histories.__repr__())
+
 
 def main():
     tornado.options.parse_command_line()
