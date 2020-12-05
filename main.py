@@ -342,10 +342,11 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                 logging.info("Player not found")
                 return
 
-            if room.game_state is GameState.PREGAME:
+            if "command" in parsed:
                 if parsed["command"] == "leave_game":
-                    del room.players[player_pos]
-                    update_dashboard(room)
+                    if room.game_state is GameState.PREGAME:
+                        del room.players[player_pos]
+                        update_dashboard(room)
                     return
 
             elif room.game_state is GameState.PLAYING:
@@ -365,9 +366,6 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                         WebSocketHandler.send_updates(player.token, message)
                         update_dashboard(room)
                         return
-
-                elif parsed["command"] == "leave_game":
-                    return
 
                 # Last round if round threshold reached
                 logging.info(f"Room count: {room.round_count} of {room.max_rounds}")
