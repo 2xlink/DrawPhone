@@ -200,7 +200,8 @@
             "timeout": document.getElementById("timeout_input").value,
             "round_count": rounds_input.value,
             "wordlist_chosen": document.getElementById("wordlist_dropdown").value,
-            "custom_words": document.getElementById("custom_wordlist").value
+            "custom_words": document.getElementById("custom_wordlist").value,
+            "allow_history_logging": document.getElementById("logging_input").checked
         }
         ws.send(JSON.stringify(ret))
     }
@@ -279,6 +280,21 @@
     <div class="minor_text_element">
         Max. Number of Rounds
         <input id="rounds_input" class="input input_small" placeholder="0" min="2" pattern="[0-9]*">
+    </div>
+    <div class="minor_text_element">
+        <table>
+<!--            <col style="width:70%">-->
+<!--            <col style="width:30%">-->
+            <tbody>
+                <td>
+                    Allow logging of history for cool data analysis
+                </td>
+                <td>
+                    <input id="logging_input" type="checkbox">
+                </td>
+            </tbody>
+        </table>
+
     </div>
     <div class="minor_text_element">
         Wordlist to Use<br>

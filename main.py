@@ -65,6 +65,7 @@ class Room:
         self.timeout = 0
         self.last_access = datetime.datetime.now()
         self.max_rounds = 0
+        self.allow_history_dumps = False
 
     def get_new_prompt(self):
         return self.prompts.pop()
@@ -286,6 +287,13 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 
                     logging.info(f"Words loaded: {room.prompts}")
 
+                    # Check if history logging allowed
+                    try:
+                        room.allow_history_dumps = bool(parsed["allow_history_logging"])
+                    except:
+                        pass
+                    logging.info(f"History logging allowed: {room.allow_history_dumps}")
+
                     random.shuffle(room.prompts)
 
                     # Send info to players
@@ -383,7 +391,9 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                     }
                     WebSocketHandler.send_updates(room.presenter.token, message)
 
-                    dump_histories_to_file(room.histories)
+                    if room.allow_history_dumps:
+                        dump_histories_to_file(room.histories)
+                    
                     return
 
                 elif room.current_task_is_drawing:
