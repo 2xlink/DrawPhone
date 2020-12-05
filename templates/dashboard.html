@@ -294,6 +294,20 @@
         <input id="rounds_input" class="input input_small" placeholder="0" min="2" pattern="[0-9]*">
     </div>
     <div class="minor_text_element">
+        Wordlist to Use<br>
+        <select id="wordlist_dropdown" class="input" name="wordlist_dropdown" onchange="wordlist_change()">
+            <option value="default">Simple Words (German)</option>
+            <option value="advanced">Advanced Words (German)</option>
+            <option value="custom">Custom Words</option>
+            <option value="sexy" disabled>18+ Words (WIP)</option>
+        </select>
+        <div id="custom_wordlist_div" style="display: none;">
+            <input id="custom_wordlist"
+                   placeholder="Pizza Hawaii, Eiffelturm, Vincent van Gogh, …"
+            >
+        </div>
+    </div>
+    <div class="minor_text_element">
         <table style="margin: auto;">
 <!--            <col style="width:70%">-->
 <!--            <col style="width:30%">-->
@@ -307,20 +321,6 @@
             </tbody>
         </table>
 
-    </div>
-    <div class="minor_text_element">
-        Wordlist to Use<br>
-        <select id="wordlist_dropdown" class="input" name="wordlist_dropdown" onchange="wordlist_change()">
-            <option value="default">Simple Words (German)</option>
-            <option value="advanced">Advanced Words (German)</option>
-            <option value="custom">Custom Words</option>
-            <option value="sexy" disabled>18+ Words (WIP)</option>
-        </select>
-        <div id="custom_wordlist_div" style="display: none;">
-            <input id="custom_wordlist"
-                   placeholder="Pizza Hawaii, Eiffelturm, Vincent van Gogh, …"
-            >
-        </div>
     </div>
     <button id="start_button" class="button" disabled onclick="startGame()">Start Game</button></p>
 </div>
