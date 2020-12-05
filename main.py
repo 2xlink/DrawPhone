@@ -157,7 +157,7 @@ class MainHandler(tornado.web.RequestHandler):
                     self.render("player_setup.html", host=tornado.options.options.as_dict().get('host'))
                 else:
                     # Sanitize name
-                    name = re.sub('[^a-zA-Z0-9]', '', name)
+                    name = re.sub('[^a-zA-Z0-9äöüß]', '', name)
 
                     room.add_player(Player(name, "", new_token))
                     logging.info(f"Added player {name} with token {new_token}")

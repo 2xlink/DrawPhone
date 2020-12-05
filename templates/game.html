@@ -122,6 +122,8 @@
         if (typeof timeout_function !== undefined) {
             clearTimeout(timeout_function);
         }
+	
+	document.getElementById('button_send_image').disabled = true
     }
 
     function sendPrompt() {
@@ -156,7 +158,7 @@
 
 <div id="div_draw" style="display: none">
     <p class="text_element">It's your turn to draw: <span id="prompt_supplied"></span></p>
-    <canvas class="sketchpad" id="sketchpad_input"></canvas>
+    <canvas class="sketchpad" id="sketchpad_input" onclick="document.getElementById('button_send_image').disabled = false"></canvas>
     <div class="draw_tools">
         <button class="color_button" onclick="change_stroke_color('4CAF50')" style="background-color: #4CAF50;"></button>
         <button class="color_button" onclick="change_stroke_color('CCFF00')" style="background-color: #CCFF00;"></button>
@@ -173,7 +175,7 @@
 <!--        <button class="size_button" onclick="change_stroke_size('10')"></button>-->
 <!--        <button class="size_button" onclick="change_stroke_size('20')"></button>-->
         </div>
-    <button class="button button_send" onclick=sendImage()>Send</button>
+    <button id="button_send_image" class="button button_send" disabled onclick=sendImage()>Send</button>
 </div>
 
 <div id="div_prompt" style="display: none">
