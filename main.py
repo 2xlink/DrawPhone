@@ -35,7 +35,6 @@ class Presenter:
 
 
 class Player:
-
     def __init__(self, name, prompt, token=str(uuid.uuid4())):
         self.name = name
         self.prompt = prompt
