@@ -193,15 +193,27 @@
     }
 
     function startGame() {
+        timeout = document.getElementById("timeout_input").value
+        round_count = rounds_input.value
+        wordlist_chosen = document.getElementById("wordlist_dropdown").value
+        custom_words = document.getElementById("custom_wordlist").value
+        allow_history_logging = document.getElementById("logging_input").checked
+
+        document.cookie = "timeout=" + timeout
+        document.cookie = "round_count=" + round_count
+        document.cookie = "wordlist_chosen=" + wordlist_chosen
+        document.cookie = "custom_words=" + custom_words
+        document.cookie = "allow_history_logging=" + allow_history_logging
+
         ret = {
             "token": getCookie("token"),
             "room_id": findGetParameter("room_id"),
             "command": "start_game",
-            "timeout": document.getElementById("timeout_input").value,
-            "round_count": rounds_input.value,
-            "wordlist_chosen": document.getElementById("wordlist_dropdown").value,
-            "custom_words": document.getElementById("custom_wordlist").value,
-            "allow_history_logging": document.getElementById("logging_input").checked
+            "timeout": timeout,
+            "round_count": round_count,
+            "wordlist_chosen": wordlist_chosen,
+            "custom_words": custom_words,
+            "allow_history_logging": allow_history_logging
         }
         ws.send(JSON.stringify(ret))
     }
@@ -337,7 +349,27 @@
 <script src="{{ static_url('jquery.min.js') }}" type="text/javascript"></script>
 <script src="{{ static_url('sketchpad.js') }}" type="text/javascript"></script>
 <script type="text/javascript">
+    // Onload stuff
     rounds_input = document.getElementById("rounds_input")
+
+    timeout = getCookie("timeout")
+    round_count = getCookie("round_count")
+    wordlist_chosen = getCookie("wordlist_chosen")
+    custom_words = getCookie("custom_words")
+    allow_history_logging = getCookie("allow_history_logging")
+
+    if (wordlist_chosen == null) {
+        wordlist_chosen = "default"
+    }
+
+    try {
+        document.getElementById("timeout_input").value = timeout
+        rounds_input.value = round_count
+        document.getElementById("wordlist_dropdown").value = wordlist_chosen
+        document.getElementById("custom_wordlist").value = custom_words
+        document.getElementById("logging_input").checked = allow_history_logging
+    }
+    catch(err) { }
 </script>
 
 </body>

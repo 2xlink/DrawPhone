@@ -240,7 +240,9 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                     # Set timeout
                     if not parsed["timeout"] == "":
                         try:
-                            room.timeout = int(parsed["timeout"])
+                            timeout = int(parsed["timeout"])
+                            if timeout >= 0:
+                                room.timeout = int(parsed["timeout"])
                         except:
                             pass
 
@@ -249,10 +251,10 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                         try:
                             rounds = int(parsed["round_count"])
                             logging.info(f"provided rounds: {rounds}")
-                            if rounds <= 1 or rounds >= (len(room.players) // 2) * 2:
-                                room.max_rounds = (len(room.players) // 2) * 2
-                            else:
+                            if 2 <= rounds <= (len(room.players) // 2) * 2:
                                 room.max_rounds = (rounds // 2) * 2
+                            else:
+                                room.max_rounds = (len(room.players) // 2) * 2
 
                         except:
                             room.max_rounds = (len(room.players) // 2) * 2
