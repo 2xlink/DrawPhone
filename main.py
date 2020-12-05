@@ -202,9 +202,9 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
     def open(self):
         self.token = self.get_cookie("token")
         WebSocketHandler.waiters.add(self)
-        logging.info(f"Websocket opened. Message: {self}")
 
     def on_close(self):
+        # Check if this is from an existing room with existing player
         WebSocketHandler.waiters.remove(self)
 
 
@@ -314,6 +314,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         else:
             # Check if a player sent a message
             player = None
+            player_pos = -1
             for i in range(len(room.players)):
                 player_iter = room.players[i]
                 if parsed["token"] == player_iter.token:
@@ -324,7 +325,13 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                 logging.info("Player not found")
                 return
 
-            if room.game_state is GameState.PLAYING:
+            if room.game_state is GameState.PREGAME:
+                if parsed["command"] == "leave_game":
+                    del room.players[player_pos]
+                    update_dashboard(room)
+                    return
+
+            elif room.game_state is GameState.PLAYING:
                 # Check if someone refreshes the page, give them the current game state
                 if "command" in parsed:
                     if parsed["command"] == "reconnect_check":

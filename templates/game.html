@@ -90,6 +90,15 @@
         }
     }
 
+    window.addEventListener("beforeunload",function(event) {
+        ret = {
+            "token": getCookie("token"),
+            "room_id": findGetParameter("room_id"),
+            "command": "leave_game"
+        }
+        ws.send(JSON.stringify(ret))
+    })
+
     function sendImage() {
         ret = {
             "token": getCookie("token"),
