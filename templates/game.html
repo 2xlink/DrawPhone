@@ -17,10 +17,16 @@
     var body
     var timeout
     var timeout_function
-    var ws = new WebSocket("wss://drawphone.kumula.me/websocket");
 
     body = document.body
     body.style.width = vw + "px"
+
+    var ws
+    if (window.location.protocol == "https:") {
+        ws = new WebSocket("wss://{{ host }}/websocket");
+    } else {
+        ws = new WebSocket("ws://{{ host }}/websocket");
+    }
 
     ws.onopen = function() {
         ret = {
@@ -79,7 +85,7 @@
         else if ("command" in data) {
             ws.close()
             if (data["command"] == "reload") {
-                setTimeout(_ => location.reload(), 5000)
+                setTimeout(_ => location.reload(), 3000)
             }
         }
     }

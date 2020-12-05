@@ -15,10 +15,15 @@
     const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
 
     var body
-    var ws = new WebSocket("wss://drawphone.kumula.me/websocket");
-
     body = document.body
     body.style.width = vw + "px"
+
+    var ws
+    if (window.location.protocol == "https:") {
+        ws = new WebSocket("wss://{{ host }}/websocket");
+    } else {
+        ws = new WebSocket("ws://{{ host }}/websocket");
+    }
 
     var rounds_input
     var timeout_started = false

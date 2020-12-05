@@ -16,6 +16,7 @@ import uuid
 
 from tornado.options import define, options
 
+define("host", default="drawphone.kumula.me", help="run on the given host", type=str)
 define("port", default=8888, help="run on the given port", type=int)
 
 
@@ -128,7 +129,7 @@ class MainHandler(tornado.web.RequestHandler):
                 rooms[room_id] = new_room
                 rooms.get(room_id).add_presenter(Presenter(new_token))
                 self.set_cookie("token", new_token)
-                self.render("dashboard.html")
+                self.render("dashboard.html", host=tornado.options.options.as_dict().get('host'))
                 logging.info(f"Rooms after creating new: {rooms}")
             else:
                 room = rooms.get(room_id)
@@ -136,13 +137,13 @@ class MainHandler(tornado.web.RequestHandler):
 
                 # Check if presenter just refreshed the page
                 if room.presenter.token == self.get_cookie("token"):
-                    self.render("dashboard.html")
+                    self.render("dashboard.html", host=tornado.options.options.as_dict().get('host'))
                     return
 
                 # Check if player just refreshed the page
                 for p in room.players:
                     if p.token == self.get_cookie("token"):
-                        self.render("game.html")
+                        self.render("game.html", host=tornado.options.options.as_dict().get('host'))
                         update_dashboard(room)
                         return
 
@@ -152,7 +153,7 @@ class MainHandler(tornado.web.RequestHandler):
 
                 name = self.get_cookie("name")
                 if name is None:
-                    self.render("player_setup.html")
+                    self.render("player_setup.html", host=tornado.options.options.as_dict().get('host'))
                 else:
                     # Sanitize name
                     name = re.sub('[^a-zA-Z0-9]', '', name)
@@ -161,14 +162,15 @@ class MainHandler(tornado.web.RequestHandler):
                     logging.info(f"Added player {name} with token {new_token}")
 
                     self.set_cookie("token", new_token)
-                    self.render("game.html")
+                    self.render("game.html", host=tornado.options.options.as_dict().get('host'))
 
                     # Update Presenter UI
                     update_dashboard(room)
 
         # Else just show intro page
         else:
-            self.render("index.html", existing_rooms=[r for r in rooms])
+            self.render("index.html", existing_rooms=[r for r in rooms],
+                        host=tornado.options.options.as_dict().get("host"))
 
 
 def update_dashboard(room: Room):
@@ -192,7 +194,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 
     def check_origin(self, origin: str) -> bool:
         parsed_origin = urllib.parse.urlparse(origin)
-        return parsed_origin.netloc.endswith("kumula.me")
+        return parsed_origin.netloc.endswith(tornado.options.options.as_dict().get('host'))
 
     def data_received(self, chunk: bytes) -> Optional[Awaitable[None]]:
         pass
@@ -437,6 +439,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 
 def main():
     tornado.options.parse_command_line()
+    print(tornado.options.options.as_dict().get('host'))
     app = Application()
     app.listen(options.port)
     tornado.ioloop.IOLoop.current().start()
