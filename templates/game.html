@@ -141,6 +141,8 @@
         if (typeof timeout_function !== undefined) {
             clearTimeout(timeout_function);
         }
+
+        document.getElementById('button_send_prompt').disabled = true
     }
 
     function change_stroke_color(color) {
@@ -178,9 +180,10 @@
     <canvas class="sketchpad" id="sketchpad_supplied"></canvas>
     <div></div>
     <div>
-        <input class="input" id="prompt_input">
+        <input class="input" id="prompt_input"
+               onclick="document.getElementById('button_send_prompt').disabled = false">
     </div>
-    <button class="button button_send" onclick=sendPrompt()>Send</button>
+    <button id="button_send_prompt" class="button button_send" disabled onclick=sendPrompt()>Send</button>
 </div>
 
 <div id="div_wait">
