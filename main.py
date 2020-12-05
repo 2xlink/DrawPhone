@@ -204,7 +204,6 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         WebSocketHandler.waiters.add(self)
 
     def on_close(self):
-        # Check if this is from an existing room with existing player
         WebSocketHandler.waiters.remove(self)
 
 
