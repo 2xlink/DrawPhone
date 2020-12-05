@@ -366,6 +366,9 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                         update_dashboard(room)
                         return
 
+                elif parsed["command"] == "leave_game":
+                    return
+
                 # Last round if round threshold reached
                 logging.info(f"Room count: {room.round_count} of {room.max_rounds}")
                 if room.round_count >= room.max_rounds:
