@@ -168,7 +168,6 @@ Flügel
 Staffelei
 Königin
 Meeresschildkröte
-Rolly Polly
 Gesicht
 Stirn
 T-Shirt
@@ -177,7 +176,7 @@ Rhinozeros
 Harken
 Münze
 Bananensplit
-Toe
+Zeh
 Schneeball
 Einhorn
 Bürgersteig
@@ -212,8 +211,8 @@ Delphin
 Golf
 Tiger
 Kalender
-Ice
 Flöte
+Eis
 Sonnenblume
 Salz und Pfeffer
 Koffer
@@ -254,7 +253,7 @@ Kirche
 Ellbogen
 Bügelbrett
 Blaue Jeans
-Pan
+Panflöte
 Klavier
 Hotdog
 Schirm
@@ -311,12 +310,12 @@ Hundehütte
 Besetzung
 Narbe
 Hummer
-Sink
+Spülbecken
 Mülleimer
 Türknauf
 Schokokeks
 Batterien
-FERNSEHEN
+Fernseher
 Schafe
 König
 Bagel
