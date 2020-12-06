@@ -55,7 +55,10 @@
 
             // Update max rounds input
             rounds_input.placeholder = Math.floor(data["players"][1].length / 2) * 2
-        }
+	
+	    // Update title
+	    document.getElementById("pre_game_title").innerText = "Connected Players (" + data["players"][1].length + ")"
+	}
         else if (data["game_state"] == "2") {
             document.getElementById("pre_game").style.display = "none"
             document.getElementById("playing").style.display = "unset"
@@ -282,7 +285,7 @@
 
 <!-- PREGAME -->
 <div id="pre_game">
-    <p class="title">Connected Players</p>
+    <p id="pre_game_title" class="title">Connected Players (0)</p>
     <p id="pre_game_player_list"></p>
     <p id="copy_room" class="minor_text_element" onclick="copy_room_to_clipboard()">Click to Copy Room ID</p>
     <div class="minor_text_element">
