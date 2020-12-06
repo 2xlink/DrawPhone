@@ -54,6 +54,11 @@
                 console.log("Setting drawing timeout to " + timeout)
                 timeout_function = setTimeout(() => sendImage(), timeout)
             }
+            
+            document.getElementById('button_send_image').disabled = true
+            setTimeout(() => {
+                document.getElementById('button_send_image').disabled = false
+            }, 3000)
         }
         else if ("image" in data) {
         // TODO: clear sketchpads and prompts
@@ -122,8 +127,6 @@
         if (typeof timeout_function !== undefined) {
             clearTimeout(timeout_function);
         }
-	
-	document.getElementById('button_send_image').disabled = true
     }
 
     function sendPrompt() {
@@ -158,7 +161,7 @@
 
 <div id="div_draw" style="display: none">
     <p class="text_element">It's your turn to draw: <span id="prompt_supplied"></span></p>
-    <canvas class="sketchpad" id="sketchpad_input" onclick="document.getElementById('button_send_image').disabled = false"></canvas>
+    <canvas class="sketchpad" id="sketchpad_input"></canvas>
     <div class="draw_tools">
         <button class="color_button" onclick="change_stroke_color('4CAF50')" style="background-color: #4CAF50;"></button>
         <button class="color_button" onclick="change_stroke_color('CCFF00')" style="background-color: #CCFF00;"></button>
