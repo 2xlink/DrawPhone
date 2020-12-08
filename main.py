@@ -90,6 +90,7 @@ class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
             (r"/", MainHandler),
+            (r"/privacy", PrivacyHandler),
             (r"/websocket", WebSocketHandler)
         ]
         settings = dict(
@@ -465,6 +466,11 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                 list_tmp = room.histories.pop()
                 room.histories.insert(0, list_tmp)
                 logging.info(f"After shifting Histories: {room.histories}")
+
+
+class PrivacyHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.render("privacy.html")
 
 
 def load_wordlist_from_file(room: Room, file_name: str):
