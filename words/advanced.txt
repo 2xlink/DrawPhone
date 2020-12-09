@@ -297,7 +297,7 @@ Geburtstagskuchen
 Stinktier
 Schatzkarte
 Garnelen-Cocktail
-Der zauberer von oz
+Der Zauberer von Oz
 Kirschbaum
 Russland
 Japan
@@ -556,6 +556,7 @@ Landwirt
 Flusspferd
 Schuhputzen
 Stop & Go
+Drive Through
 Killerbienen
 Eskimo
 Kopf an Kopf
@@ -619,7 +620,7 @@ Kazoo
 Linker Flügel
 Matzeknödelsuppe
 Badezimmer
-ägypten
+Ägypten
 Händchen haltend
 Satellitenschüssel
 Blutbank
@@ -1349,7 +1350,7 @@ Voodoo
 Zungenkuss
 Fernsteuerung
 Freundin
-Strafzettel für Geschwindigkeitsübertretung
+Strafzettel
 Viehzüchter
 Chihuahua
 Wimpernzange
@@ -1368,7 +1369,8 @@ Saxophon
 Spindoktor
 Meerjungfrau
 Maisfeld
-Fräulein Schweinchen
+Aschenbrödel
+Goldesel
 Steinfisch
 Bellhop
 Himmel
@@ -1384,7 +1386,7 @@ Boxenstopp
 Ausgestorben
 Helm
 Erste Basis
-Kriechzwischenraum
+Zwischenraum
 Aufblasen
 Postamt
 Wasserkühler
