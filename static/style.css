@@ -9,12 +9,16 @@
 .color_button {
     border: none;
     color: white;
-    padding: 18px;
     margin: 3px;
+    padding: 0px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 16px;
+    width: 36px;
+    height: 36px;
+    vertical-align: middle;
+    font-size: 24px;
+    color: black;
 }
 
 .size_button {
@@ -93,7 +97,7 @@ body {
 
 @font-face {
   font-family: myFont;
-  src: url(ComicNeue-Regular.ttf);
+  src: url(fonts/ComicNeue-Regular.ttf);
 }
 
 .fade_in {

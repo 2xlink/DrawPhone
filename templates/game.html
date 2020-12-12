@@ -3,6 +3,7 @@
 <head>
     <title>Drawphone</title>
     <link rel="stylesheet" type="text/css" href="{{ static_url('style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ static_url('fonts/font-awesome-4.7.0/css/font-awesome.min.css') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
@@ -155,7 +156,7 @@
     }
 
     function change_stroke_size(size) {
-        sketchpad1.color = '#' + color
+        sketchpad1.penSize = size
     }
 </script>
 
@@ -172,11 +173,21 @@
         <button class="color_button" onclick="change_stroke_color('FFFF33')" style="background-color: #FFFF33;"></button>
         <button class="color_button" onclick="change_stroke_color('5B3A29')" style="background-color: #5B3A29;"></button>
         <button class="color_button" onclick="change_stroke_color('555555')" style="background-color: #555555;"></button>
-<!--        <button class="size_button" onclick="change_stroke_size('5')">-->
-<!--            <img src="{{ static_url('img/0.png') }}"/>-->
-<!--        </button>-->
-<!--        <button class="size_button" onclick="change_stroke_size('10')"></button>-->
-<!--        <button class="size_button" onclick="change_stroke_size('20')"></button>-->
+        <button class="color_button" onclick="change_stroke_size(5)">
+            <img src="{{ static_url('img/2.png') }}"/>
+        </button>
+        <button class="color_button" onclick="change_stroke_size(10)">
+            <img src="{{ static_url('img/1.png') }}"/>
+        </button>
+        <button class="color_button" onclick="change_stroke_size(20)">
+            <img src="{{ static_url('img/0.png') }}"/>
+        </button>
+        <button class="color_button" onclick="sketchpad1.undo()">
+            <i class="fa fa-undo" aria-hidden="true"></i>
+        </button>
+        <button class="color_button" onclick="sketchpad1.redo()">
+            <i class="fa fa-repeat" aria-hidden="true"></i>
+        </button>
         </div>
     <button id="button_send_image" class="button button_send" disabled onclick=sendImage()>Send</button>
 </div>
