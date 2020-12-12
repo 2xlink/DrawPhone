@@ -1029,7 +1029,7 @@ Cowboy
 Parade
 Schaukel-Satz
 Kinder
-Vögel & die Bienen
+Aufklärungsunterricht
 Bildschirmhintergrund
 Mittleres Kind
 New york minute
@@ -2052,9 +2052,9 @@ Jack-in-the-box
 Shortstop
 Vogelgesang
 Schachbrett
-Clam-up
+Geodreieck
 Pinocchio
-Lambchop
+Weihnachtsbraten
 Pilz
 Kinderbuch
 Meditieren
@@ -2308,7 +2308,7 @@ Glöckner
 K.O. schlagen
 Kissenschlacht
 Apfelmus
-Lime
+Limette
 Karaoke
 Ochsenfrosch
 Laterne
