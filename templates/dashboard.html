@@ -359,14 +359,11 @@
     round_count = getCookie("round_count")
     wordlist_chosen = getCookie("wordlist_chosen")
     custom_words = getCookie("custom_words")
-    allow_history_logging = getCookie("allow_history_logging")
+    allow_history_logging = getCookie("allow_history_logging") == null?
+        true : getCookie("allow_history_logging") == true
 
     if (wordlist_chosen == null) {
         wordlist_chosen = "default"
-    }
-
-    if (allow_history_logging == null) {
-        allow_history_logging = true
     }
 
     try {
