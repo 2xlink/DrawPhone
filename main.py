@@ -44,7 +44,7 @@ class Player:
         self.is_ready = False
 
     def __repr__(self) -> str:
-        return f"Player: Name: {self.name}, Prompt: {self.prompt}, Token: {self.token}"
+        return f"Player: Name: {self.name}, Prompt: {self.prompt}, Token: {self.token}, Ready: {self.is_ready}"
 
 
 class Room:
@@ -342,9 +342,9 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                 logging.info("Player not found")
                 return
 
-            if "command" in parsed:
-                if parsed["command"] == "leave_game":
-                    if room.game_state is GameState.PREGAME:
+            if room.game_state is GameState.PREGAME:
+                if "command" in parsed:
+                    if parsed["command"] == "leave_game":
                         del room.players[player_pos]
                         update_dashboard(room)
                     return
@@ -353,19 +353,24 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                 # Check if someone refreshes the page, give them the current game state
                 if "command" in parsed:
                     if parsed["command"] == "reconnect_check":
+                        logging.info(f"Player wants to reconnect: {player}")
                         if player.is_ready:
                             return
                         if room.current_task_is_drawing:
                             message = {
-                                "prompt": player.prompt
+                                "prompt": player.prompt,
+                                "timeout": room.timeout
                             }
                         else:
                             message = {
-                                "image": player.image
+                                "image": player.image,
+                                "timeout": room.timeout
                             }
                         WebSocketHandler.send_updates(player.token, message)
                         update_dashboard(room)
-                        return
+
+                    # Ignore other commands
+                    return
 
                 # Last round if round threshold reached
                 logging.info(f"Room count: {room.round_count} of {room.max_rounds}")
