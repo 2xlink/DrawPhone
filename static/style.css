@@ -1,3 +1,22 @@
+:root {
+    /* colors */
+    --background: #FFFFFF;
+    --text-element: #fbc687;
+    --minor-text-element: #f4f7c5;
+    --font-light: #FFFFFF;
+    --font-dark: #000000;
+    --button: #da806a;
+    --button-hover: #ea907a;
+    --borders: #666666;
+    --title: #ea907a;
+
+    /* size parameters */
+    --border-radius: 5px;
+  }
+
+body{
+    background-color: var(--background);
+}
 .sketchpad {
     box-shadow: 2px 2px 5px 0px rgba(50, 50, 50, 0.75);
     margin: auto;
@@ -8,7 +27,7 @@
 
 .color_button {
     border: none;
-    color: white;
+    color: var(--font-light);
     margin: 3px;
     padding: 0px;
     text-align: center;
@@ -18,12 +37,12 @@
     height: 36px;
     vertical-align: middle;
     font-size: 24px;
-    color: black;
+    color: var(--font-dark);
 }
 
 .size_button {
     border: none;
-    color: white;
+    color: var(--font-light);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -41,27 +60,43 @@
     text-align: center;
     margin: 10px;
     padding: 10px;
-    background-color: #ea907a;
+    background-color: var(--title);
+    border-radius: var(--border-radius);
 }
 
 .text_element {
     text-align: center;
     margin: 10px;
     padding: 10px;
-    background-color: #fbc687;
+    background-color: var(--text-element);
+    border-radius: var(--border-radius);
 }
 
 .minor_text_element {
     text-align: center;
     margin: 10px;
     padding: 10px;
-    background-color: #f4f7c5;
+    background-color: var(--minor-text-element);
+    border-radius: var(--border-radius);
 }
 
-.button {
+button {
+    background-color: var(--button); /* Green */
+    border: none;
+    color: var(--font-light);
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    margin: 4px 2px;
+    cursor: pointer;
     display: block;
     margin: auto;
-}
+    border-radius: 5px;
+  }
+
+  button:hover {
+    background-color: var(--button-hover); /* Green */
+  }
 
 .button_send {
     display: block;
