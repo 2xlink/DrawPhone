@@ -26,3 +26,5 @@ function findGetParameter(parameterName) {
 function unescape(string) {
     return new DOMParser().parseFromString(string,'text/html').querySelector('html').textContent;
 }
+
+const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))

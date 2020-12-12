@@ -17,6 +17,7 @@
     var prompt_input
     var body
     var timeout
+    var timeout_counter
     var timeout_function
 
     body = document.body
@@ -38,6 +39,8 @@
         ws.send(JSON.stringify(ret))
     };
 
+
+
     ws.onmessage = function (evt) {
         console.log(evt.data)
         data = JSON.parse(evt.data)
@@ -46,20 +49,42 @@
         // First prompt has timeout
         if ("timeout" in data) {
             timeout = data["timeout"] * 1000
+            timeout_counter = timeout / 1000
+
+            if (timeout != 0) {
+                f = async function() {
+                    b1 = document.getElementById('button_send_prompt')
+                    b2 = document.getElementById('button_send_image')
+
+                    while(true) {
+                        timeout_counter -= 1
+                        if (timeout_counter < 0) timeout_counter = 0
+
+                        b1.innerText = "Send - " + timeout_counter + " seconds remaining!"
+                        b2.innerText = "Send - " + timeout_counter + " seconds remaining!"
+
+                        await sleep(1000)
+                    }
+                }
+
+                f()
+            }
         }
 
         if ("prompt" in data) {
             document.getElementById('div_draw').style.display = "unset"
             document.getElementById("prompt_supplied").innerText = data["prompt"]
-            if (timeout != 0) {
-                console.log("Setting drawing timeout to " + timeout)
-                timeout_function = setTimeout(() => sendImage(), timeout)
-            }
-            
+
             document.getElementById('button_send_image').disabled = true
             setTimeout(() => {
                 document.getElementById('button_send_image').disabled = false
             }, 3000)
+
+            if (timeout != 0) {
+                console.log("Setting drawing timeout to " + timeout)
+                timeout_function = setTimeout(() => sendImage(), timeout)
+                timeout_counter = timeout / 1000
+            }
         }
         else if ("image" in data) {
         // TODO: clear sketchpads and prompts
@@ -86,6 +111,7 @@
             if (timeout != 0) {
                 console.log("Setting prompt timeout to " + timeout)
                 timeout_function = setTimeout(() => sendPrompt(), timeout)
+                timeout_counter = timeout / 1000
             }
         }
         else if ("command" in data) {
