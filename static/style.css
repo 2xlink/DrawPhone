@@ -94,9 +94,15 @@ button {
     border-radius: 5px;
   }
 
-  button:hover {
+button:hover {
     background-color: var(--button-hover); /* Green */
-  }
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+}
 
 .button_send {
     display: block;
