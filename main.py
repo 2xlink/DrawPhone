@@ -19,6 +19,7 @@ from tornado.options import define, options
 
 define("host", default="drawphone.kumula.me", help="run on the given host", type=str)
 define("port", default=8888, help="run on the given port", type=int)
+define("contact-data", default="", help="path to your contact data image", type=str)
 
 
 class GameState(str, Enum):
@@ -470,7 +471,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 
 class PrivacyHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render("privacy.html")
+        self.render("privacy.html", contact_image=tornado.options.options.as_dict().get('contact-data'))
 
 
 def load_wordlist_from_file(room: Room, file_name: str):
