@@ -420,10 +420,14 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                     # All players ready
                     # Give next player the image
                     for i in range(len(room.players) - 1):
-                        message = {"image": room.players[i].image}
+                        message = {"image": room.players[i].image,
+                                   "timeout": room.timeout}
                         WebSocketHandler.send_updates(room.players[i+1].token, message)
                     # Give first player last player's image
-                    message = {"image": room.players[len(room.players) - 1].image}
+                    message = {
+                        "image": room.players[len(room.players) - 1].image,
+                        "timeout": room.timeout
+                    }
                     WebSocketHandler.send_updates(room.players[0].token, message)
 
                     # Update histories
@@ -443,10 +447,14 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                     # All players ready
                     # Give next player the prompt
                     for i in range(len(room.players) - 1):
-                        message = {"prompt": room.players[i].prompt}
+                        message = {"prompt": room.players[i].prompt,
+                                   "timeout": room.timeout}
                         WebSocketHandler.send_updates(room.players[i + 1].token, message)
                     # Give first player last player's image
-                    message = {"prompt": room.players[len(room.players) - 1].prompt}
+                    message = {
+                        "prompt": room.players[len(room.players) - 1].prompt,
+                        "timeout": room.timeout
+                    }
                     WebSocketHandler.send_updates(room.players[0].token, message)
 
                     # Update histories
