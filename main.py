@@ -418,21 +418,28 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                             return
 
                     # All players ready
-                    # Give next player the image
-                    for i in range(len(room.players) - 1):
-                        message = {"image": room.players[i].image,
-                                   "timeout": room.timeout}
-                        WebSocketHandler.send_updates(room.players[i+1].token, message)
-                    # Give first player last player's image
-                    message = {
-                        "image": room.players[len(room.players) - 1].image,
-                        "timeout": room.timeout
-                    }
-                    WebSocketHandler.send_updates(room.players[0].token, message)
 
                     # Update histories
                     for i in range(len(room.players)):
                         room.histories[i].append((room.players[i].name, room.players[i].image))
+
+                    # Give next player the image
+                    tmp_image = room.players[len(room.players) - 1].image
+
+                    for i in range(len(room.players) - 1, 0, -1):
+                        room.players[i].image = room.players[i-1].image
+
+                    # Give first player last player's image
+                    room.players[0].image = tmp_image
+
+                    # Send updates
+                    for i in range(len(room.players)):
+                        message = {
+                            "image": room.players[i].image,
+                            "timeout": room.timeout
+                        }
+                        WebSocketHandler.send_updates(room.players[i].token, message)
+
                 else:
                     player.prompt = parsed["prompt"]
                     player.is_ready = True
@@ -445,21 +452,27 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                             return
 
                     # All players ready
-                    # Give next player the prompt
-                    for i in range(len(room.players) - 1):
-                        message = {"prompt": room.players[i].prompt,
-                                   "timeout": room.timeout}
-                        WebSocketHandler.send_updates(room.players[i + 1].token, message)
-                    # Give first player last player's image
-                    message = {
-                        "prompt": room.players[len(room.players) - 1].prompt,
-                        "timeout": room.timeout
-                    }
-                    WebSocketHandler.send_updates(room.players[0].token, message)
 
                     # Update histories
                     for i in range(len(room.players)):
                         room.histories[i].append((room.players[i].name, room.players[i].prompt))
+
+                    # Give next player the prompt
+                    tmp_prompt = room.players[len(room.players) - 1].prompt
+
+                    for i in range(len(room.players) - 1, 0, -1):
+                        room.players[i].prompt = room.players[i-1].prompt
+
+                    # Give first player last player's prompt
+                    room.players[0].prompt = tmp_prompt
+
+                    # Send updates
+                    for i in range(len(room.players)):
+                        message = {
+                            "prompt": room.players[i].prompt,
+                            "timeout": room.timeout
+                        }
+                        WebSocketHandler.send_updates(room.players[i].token, message)
 
                 # Set all players unready
                 for player_iter in room.players:
