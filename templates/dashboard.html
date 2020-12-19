@@ -54,7 +54,7 @@
             document.getElementById("start_button").disabled = data["players"][1].length < 2
 
             // Update max rounds input
-            rounds_input.placeholder = Math.floor(data["players"][1].length / 2) * 2
+            rounds_input.placeholder = data["players"][1].length
 	
 	    // Update title
 	    document.getElementById("pre_game_title").innerText = "Connected Players (" + data["players"][1].length + ")"
@@ -93,6 +93,14 @@
                 }
             }
 
+            // if it is the first round and players should input the prompt, hide timeout
+            if(data["round_count"] == 1 && data["max_rounds"] % 2 == 1) {
+                timeout_element.style.display = "none"
+            }
+            else {
+                timeout_element.style.display = "block"
+            }
+
             data["players"][0].forEach(p => {
                 d = document.createElement("div")
                 d.classList.add("player", "minor_text_element")
@@ -125,11 +133,9 @@
 
         for (i1 = 0; i1 < histories.length; i1++) {
             hist = histories[i1]
-            console.log(hist)
 
             for (i2 = 0; i2 < hist.length; i2++) {
                 event_tuple = hist[i2]
-                console.log(event_tuple)
 
                 player_name = event_tuple[0]
                 event = event_tuple[1]

@@ -19,6 +19,7 @@
     var timeout
     var timeout_counter
     var timeout_function
+    var timeout_has_started = false
 
     body = document.body
     body.style.width = vw + "px"
@@ -40,13 +41,12 @@
     };
 
 
-
     ws.onmessage = function (evt) {
         console.log(evt.data)
         data = JSON.parse(evt.data)
         document.getElementById('div_wait').style.display = "none"
 
-        // First prompt has timeout
+        // If prompt has timeout, set it and start visual countdown
         if ("timeout" in data) {
             timeout = data["timeout"] * 1000
             timeout_counter = timeout / 1000
@@ -67,7 +67,10 @@
                     }
                 }
 
-                f()
+                if(!timeout_has_started) {
+                    timeout_has_started = true
+                    f()
+                }
             }
         }
 
@@ -113,6 +116,10 @@
                 timeout_function = setTimeout(() => sendPrompt(), timeout)
                 timeout_counter = timeout / 1000
             }
+        }
+        else if ("computer_supplied_prompt" in data) {
+            document.getElementById('div_submit_first_prompt').style.display = "unset"
+            computer_supplied_prompt = data["computer_supplied_prompt"]
         }
         else if ("command" in data) {
             ws.close()
@@ -183,6 +190,28 @@
         document.getElementById('button_send_prompt').disabled = true
     }
 
+    function sendFirstPrompt(chose_computer_supplied) {
+        if(chose_computer_supplied) {
+            prompt = computer_supplied_prompt
+        }
+        else {
+            prompt = document.getElementById("input_first_prompt").value
+        }
+
+        ret = {
+            "token": getCookie("token"),
+            "room_id": findGetParameter("room_id"),
+            "prompt": prompt
+        }
+        ws.send(JSON.stringify(ret))
+
+        document.getElementById('div_submit_first_prompt').style.display = "none"
+        document.getElementById('div_wait').style.display = "unset"
+
+        document.getElementById('button_send_first_prompt').disabled = true
+        document.getElementById('input_first_prompt').value = ""
+    }
+
     function change_stroke_color(color) {
         sketchpad1.color = '#' + color
     }
@@ -234,7 +263,18 @@
         <input class="input" id="prompt_input"
                onclick="document.getElementById('button_send_prompt').disabled = false">
     </div>
-    <button id="button_send_prompt" class="button button_send" disabled onclick=sendPrompt()>Send</button>
+    <button id="button_send_prompt" class="button button_send"
+            disabled onclick=sendPrompt()>Send</button>
+</div>
+
+<div id="div_submit_first_prompt" style="display: none">
+    <p class="text_element">What should the next player draw?</p>
+    <input class="input" id="input_first_prompt"
+        onclick="document.getElementById('button_send_first_prompt').disabled = false">
+    <button id="button_send_first_prompt" class="button button_send"
+            disabled onclick='sendFirstPrompt(false)'>Send</button>
+    <button class="button button_send"
+        onclick='sendFirstPrompt(true)'>Let the computer choose for me</button>
 </div>
 
 <div id="div_wait">

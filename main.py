@@ -114,7 +114,7 @@ class MainHandler(tornado.web.RequestHandler):
         rooms_to_delete = []
         for room_id in rooms:
             if datetime.datetime.now() - rooms[room_id].last_access > datetime.timedelta(minutes=20):
-                logging.info(f"Room {room_id} not accessed for at least 10 minutes (was {rooms[room_id]})")
+                logging.info(f"Room {room_id} not accessed for at least 20 minutes (was {rooms[room_id]})")
                 rooms_to_delete.append(room_id)
         for r in rooms_to_delete:
             if r in rooms:
@@ -184,7 +184,7 @@ def update_dashboard(room: Room):
             [p.name for p in room.players if not p.is_ready]
         ],
         "round_count": room.round_count,
-        "max_rounds": (len(room.players) // 2) * 2,
+        "max_rounds": room.max_rounds,
         "timeout": room.timeout
     }
     WebSocketHandler.send_updates(room.presenter.token, message)
@@ -249,19 +249,16 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                             pass
 
                     # Set max amount of rounds
+                    room.max_rounds = len(room.players)
+
                     if not parsed["round_count"] == "":
                         try:
                             rounds = int(parsed["round_count"])
                             logging.info(f"provided rounds: {rounds}")
-                            if 2 <= rounds <= (len(room.players) // 2) * 2:
-                                room.max_rounds = (rounds // 2) * 2
-                            else:
-                                room.max_rounds = (len(room.players) // 2) * 2
-
+                            if 2 <= rounds <= len(room.players):
+                                room.max_rounds = rounds
                         except:
-                            room.max_rounds = (len(room.players) // 2) * 2
-                    else:
-                        room.max_rounds = (len(room.players) // 2) * 2
+                            pass
 
                     logging.info(f"Room max count is {room.max_rounds}")
 
@@ -300,16 +297,31 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 
                     random.shuffle(room.prompts)
 
-                    # Send info to players
-                    for player_iter in room.players:
-                        player_iter.prompt = room.get_new_prompt()
-                        message = {
-                            "prompt": player_iter.prompt,
-                            "timeout": room.timeout
-                        }
-                        WebSocketHandler.send_updates(player_iter.token, message)
-                        # Create histories
-                        room.histories.append([("Computer", player_iter.prompt)])
+                    # Setup ready
+
+                    # Should players draw first, or supply a prompt?
+                    if room.max_rounds % 2 == 0:
+                        room.current_task_is_drawing = True
+                        for player_iter in room.players:
+                            player_iter.prompt = room.get_new_prompt()
+                            message = {
+                                "prompt": player_iter.prompt,
+                                "timeout": room.timeout
+                            }
+                            WebSocketHandler.send_updates(player_iter.token, message)
+                            # Create histories
+                            room.histories.append([("Computer", player_iter.prompt)])
+                    else:
+                        room.current_task_is_drawing = False
+                        for player_iter in room.players:
+                            player_iter.prompt = room.get_new_prompt()
+                            message = {
+                                "computer_supplied_prompt": player_iter.prompt,
+                                "timeout": room.timeout
+                            }
+                            WebSocketHandler.send_updates(player_iter.token, message)
+                            # Create histories
+                            room.histories.append([])
 
                     room.game_state = GameState.PLAYING
                     update_dashboard(room)
@@ -364,10 +376,17 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                                 "timeout": room.timeout
                             }
                         else:
-                            message = {
-                                "image": player.image,
-                                "timeout": room.timeout
-                            }
+                            # Check if it's the first round, i.e. players supply first prompts
+                            if room.round_count == 1:
+                                message = {
+                                    "computer_supplied_prompt": player.prompt,
+                                    "timeout": room.timeout
+                                }
+                            else:
+                                message = {
+                                    "image": player.image,
+                                    "timeout": room.timeout
+                                }
                         WebSocketHandler.send_updates(player.token, message)
                         update_dashboard(room)
 
@@ -453,8 +472,11 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 
                     # All players ready
 
+                    print(room.histories)
+                    print(room.players)
                     # Update histories
                     for i in range(len(room.players)):
+                        print(f"Adding {room.players[i]}")
                         room.histories[i].append((room.players[i].name, room.players[i].prompt))
 
                     # Give next player the prompt
