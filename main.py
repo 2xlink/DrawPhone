@@ -5,6 +5,7 @@ import random
 import re
 import datetime
 import os
+import json
 
 import logging
 import tornado.escape
@@ -12,6 +13,7 @@ import tornado.ioloop
 import tornado.options
 import tornado.web
 import tornado.websocket
+import tornado.httpclient as httpclient
 import os.path
 import uuid
 
@@ -85,6 +87,7 @@ class Room:
 
 
 rooms: Dict[str, Room] = {}
+latest_commits: List[str] = []
 
 
 class Application(tornado.web.Application):
@@ -223,6 +226,14 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
     def on_message(self, message):
         logging.info("got message %r", message)
         parsed = tornado.escape.json_decode(message)
+
+        if "command" in parsed:
+            if parsed["command"] == "get_commits":
+                msg = {
+                    "commits": latest_commits
+                }
+                self.write_message(msg)
+            return
 
         if "room_id" not in parsed or parsed["room_id"] not in rooms:
             logging.info("Room not found")
@@ -536,9 +547,41 @@ def dump_histories_to_file(histories):
 
 def main():
     tornado.options.parse_command_line()
+
+    get_latest_commits()
+
     app = Application()
     app.listen(options.port)
     tornado.ioloop.IOLoop.current().start()
+
+
+def get_latest_commits():
+    global latest_commits
+
+    http_client = httpclient.HTTPClient()
+    try:
+        response = http_client.fetch("https://api.github.com/repos/2xlink/DrawPhone/events")
+        parsed = json.loads(response.body)
+    except Exception as e:
+        # Other errors are possible, such as IOError.
+        logging.warning("Error: " + str(e))
+        parsed = []
+
+    http_client.close()
+
+    i = 0
+    for event in parsed:
+        if event["type"] != "PushEvent":
+            i += 1
+            continue
+
+        latest_commits.append(event["payload"]["commits"][0]["message"])
+        i += 1
+        if i >= 3:
+            break
+
+    # latest_commits = ["Adds ability to set prompt on first round (Fixes #13)", "Updates words", "Fixes #15"]
+    logging.info(f"Got latest commits: {latest_commits}")
 
 
 if __name__ == "__main__":
