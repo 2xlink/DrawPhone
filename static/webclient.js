@@ -72,26 +72,22 @@ ws.onopen = function() {
 };
 
 function show_player_list() {
-    // if it is the first round and players should input the prompt, hide timeout
-    if (data["round_count"] == 1 && data["max_rounds"] % 2 == 1) {
-        div_timeout_counter.style.display = "none"
-    }
-
     data["players"][0].forEach(p => {
         d = document.createElement("div")
         d.classList.add("player", "minor_text_element")
         d.innerText = p
-        root_ready.appendChild(d)
+        div_presenter_playing_player_list_ready.appendChild(d)
     })
 
     data["players"][1].forEach(p => {
         d = document.createElement("div")
         d.classList.add("player", "minor_text_element")
         d.innerText = p
-        root_unready.appendChild(d)
+        div_presenter_playing_player_list_not_ready.appendChild(d)
     })
 
-    title.innerText = "Round " + data["round_count"] + " of " + data["max_rounds"]
+    div_presenter_playing_title.innerText =
+        "Round " + data["round_count"] + " of " + data["max_rounds"]
 }
 
 function show_pregame_player_list() {
@@ -130,13 +126,13 @@ ws.onmessage = function (evt) {
         div_presenter_pre_game.style.display = "none"
         div_presenter_playing.style.display = "unset"
 
-        root_ready = div_presenter_playing_player_list_ready
-        root_unready = div_presenter_playing_player_list_not_ready
-        title = div_presenter_playing_title
+        div_presenter_playing_player_list_ready.innerHTML = ""
+        div_presenter_playing_player_list_not_ready.innerHTML = ""
 
-        root_ready.innerHTML = ""
-        root_unready.innerHTML = ""
-
+        // if it is the first round and players should input the prompt, hide timeout
+        if (data["round_count"] == 1 && data["max_rounds"] % 2 == 1) {
+            div_timeout_counter.style.display = "none"
+        }
         show_player_list()
     }
     else if (command == "show_histories") {
