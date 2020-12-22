@@ -76,13 +76,13 @@ class Room:
     def add_player(self, player: Player):
         self.players += [player]
 
-    def add_presenter(self, presenter: Presenter):
+    def set_presenter(self, presenter: Presenter):
         self.presenter = presenter
 
     def __repr__(self) -> str:
-        ret = f"Presenter: {self.presenter}. Timeout: {self.timeout}. Players: "
-        for player in self.players:
-            ret += repr(player) + ". "
+        ret = f"Timeout: {self.timeout}. Presenter: {self.presenter}. Players: "
+        for p in self.players:
+            ret += repr(p) + ", "
         return ret
 
 
@@ -129,58 +129,69 @@ class MainHandler(tornado.web.RequestHandler):
             room_id = room_id_param[0]
             new_token = str(uuid.uuid4())
 
+            # Check if name is set correctly
+            name = self.get_cookie("name")
+            if name is None:
+                self.render("player_setup.html", host=tornado.options.options.as_dict().get('host'))
+                return
+            name = re.sub('[^a-zA-Z0-9äöüß]', '', name)
+
             # If room does not exist, create it and set requester to presenter
             if room_id not in rooms:
-                new_room = Room()
-                rooms[room_id] = new_room
-                rooms.get(room_id).add_presenter(Presenter(new_token))
-                self.set_cookie("token", new_token)
-                self.render("dashboard.html", host=tornado.options.options.as_dict().get('host'))
-                logging.info(f"Rooms after creating new: {rooms}")
+                room = Room()
+                rooms[room_id] = room
+                rooms.get(room_id).set_presenter(Presenter(new_token))
+
             else:
                 room = rooms.get(room_id)
                 room.last_access = datetime.datetime.now()
 
-                # Check if presenter just refreshed the page
-                if room.presenter.token == self.get_cookie("token"):
-                    self.render("dashboard.html", host=tornado.options.options.as_dict().get('host'))
+                # Check if presenter just refreshed the page in pregame, otherwise they are just a player
+                if room.presenter.token == self.get_cookie("token") and \
+                        room.game_state is GameState.PREGAME:
+                    # Add the presenter as a player again
+                    name = re.sub('[^a-zA-Z0-9äöüß]', '', self.get_cookie("name"))
+                    room.add_player(
+                        Player(re.sub('[^a-zA-Z0-9äöüß]', '', name), "", room.presenter.token))
+                    self.render("game.html",
+                        host=tornado.options.options.as_dict().get('host'))
                     return
 
                 # Check if player just refreshed the page
                 for p in room.players:
                     if p.token == self.get_cookie("token"):
-                        self.render("game.html", host=tornado.options.options.as_dict().get('host'))
-                        update_dashboard(room)
+                        self.render("game.html",
+                                    host=tornado.options.options.as_dict().get('host'))
                         return
 
                 # If the game is already running, skip everything else
                 if room.game_state != GameState.PREGAME:
                     return
 
-                name = self.get_cookie("name")
-                if name is None:
-                    self.render("player_setup.html", host=tornado.options.options.as_dict().get('host'))
-                else:
-                    # Sanitize name
-                    name = re.sub('[^a-zA-Z0-9äöüß]', '', name)
+            room.add_player(Player(name, "", new_token))
+            logging.info(f"Added player {name} with token {new_token}")
 
-                    room.add_player(Player(name, "", new_token))
-                    logging.info(f"Added player {name} with token {new_token}")
+            self.set_cookie("token", new_token)
+            self.render("game.html",
+                        host=tornado.options.options.as_dict().get('host'))
 
-                    self.set_cookie("token", new_token)
-                    self.render("game.html", host=tornado.options.options.as_dict().get('host'))
-
-                    # Update Presenter UI
-                    update_dashboard(room)
+            # Update Presenter UI
+            update_game_status(room, {"command": "show_pregame"})
 
         # Else just show intro page
         else:
             self.render("index.html", existing_rooms=[r for r in rooms],
-                        host=tornado.options.options.as_dict().get("host"))
+                        host=tornado.options.options.as_dict().get("host"),
+                        commits="!!DELIM!!".join(latest_commits))
 
 
-def update_dashboard(room: Room):
+def update_game_status(room: Room, extra_obj=None):
+    if extra_obj is None:
+        extra_obj = {}
+
     message = {
+        "type": "presenter",
+        "command": "general_update",
         "game_state": room.game_state,
         "players": [
             [p.name for p in room.players if p.is_ready],
@@ -190,7 +201,23 @@ def update_dashboard(room: Room):
         "max_rounds": room.max_rounds,
         "timeout": room.timeout
     }
-    WebSocketHandler.send_updates(room.presenter.token, message)
+    message = {**message, **extra_obj}
+
+    for p in room.players:
+        WebSocketHandler.send_updates(p.token, message)
+
+
+def update_current_task(room: Room, token: str, extra_obj=None):
+    if extra_obj is None:
+        extra_obj = {}
+
+    message = {
+        "type": "game",
+        "command": "show_task",
+        "timeout": room.timeout
+    }
+    message = { **message, **extra_obj}
+    WebSocketHandler.send_updates(token, message)
 
 
 class WebSocketHandler(tornado.websocket.WebSocketHandler):
@@ -227,300 +254,266 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         logging.info("got message %r", message)
         parsed = tornado.escape.json_decode(message)
 
-        if "command" in parsed:
-            if parsed["command"] == "get_commits":
-                msg = {
-                    "commits": latest_commits
-                }
-                self.write_message(msg)
-            return
-
         if "room_id" not in parsed or parsed["room_id"] not in rooms:
             logging.info("Room not found")
             return
         room = rooms.get(parsed["room_id"])
         room.last_access = datetime.datetime.now()
 
-        if room.presenter.token == parsed["token"]:
-            if room.game_state is GameState.PREGAME:
-                if parsed["command"] == "reconnect_check":
-                    update_dashboard(room)
+        if room.presenter.token == parsed["token"] and room.game_state is GameState.PREGAME:
+            if parsed["command"] == "reconnect_check":
+                message = {"command": "show_settings"}
+                update_game_status(room, message)
 
-                if parsed["command"] == "start_game":
-                    # Shuffle players
-                    random.shuffle(room.players)
+            if parsed["command"] == "start_game":
+                # Shuffle players
+                random.shuffle(room.players)
 
-                    # Set timeout
-                    if not parsed["timeout"] == "":
-                        try:
-                            timeout = int(parsed["timeout"])
-                            if timeout >= 0:
-                                room.timeout = int(parsed["timeout"])
-                        except:
-                            pass
-
-                    # Set max amount of rounds
-                    room.max_rounds = len(room.players)
-
-                    if not parsed["round_count"] == "":
-                        try:
-                            rounds = int(parsed["round_count"])
-                            logging.info(f"provided rounds: {rounds}")
-                            if 2 <= rounds <= len(room.players):
-                                room.max_rounds = rounds
-                        except:
-                            pass
-
-                    logging.info(f"Room max count is {room.max_rounds}")
-
-                    # Load wordlist
-                    # Set default first
-                    load_wordlist_from_file(room, "simple.txt")
-
+                # Set timeout
+                if not parsed["timeout"] == "":
                     try:
-                        wordlist_chosen = parsed["wordlist_chosen"]
-                        logging.info(f"Chosen word list: {wordlist_chosen}")
-
-                        if wordlist_chosen == "advanced":
-                            load_wordlist_from_file(room, "advanced.txt")
-
-                        elif wordlist_chosen == "custom":
-                            words_unparsed = str(parsed["custom_words"])
-                            words = []
-                            for w in words_unparsed.split(","):
-                                words.append(re.sub('[^a-zA-Z0-9 \'"äöüß]', '', w.strip()))
-
-                            logging.info(f"Words: {words}")
-
-                            if len(words) >= len(room.players):
-                                room.prompts = words
+                        timeout = int(parsed["timeout"])
+                        if timeout >= 0:
+                            room.timeout = int(parsed["timeout"])
                     except:
                         pass
 
-                    logging.info(f"Words loaded: {room.prompts}")
+                # Set max amount of rounds
+                room.max_rounds = len(room.players)
 
-                    # Check if history logging allowed
+                if not parsed["round_count"] == "":
                     try:
-                        room.allow_history_dumps = bool(parsed["allow_history_logging"])
+                        rounds = int(parsed["round_count"])
+                        logging.info(f"provided rounds: {rounds}")
+                        if 2 <= rounds <= len(room.players):
+                            room.max_rounds = rounds
                     except:
                         pass
-                    logging.info(f"History logging allowed: {room.allow_history_dumps}")
 
-                    random.shuffle(room.prompts)
+                logging.info(f"Room max count is {room.max_rounds}")
 
-                    # Setup ready
+                # Load wordlist
+                # Set default first
+                load_wordlist_from_file(room, "simple.txt")
 
-                    # Should players draw first, or supply a prompt?
-                    if room.max_rounds % 2 == 0:
-                        room.current_task_is_drawing = True
-                        for player_iter in room.players:
-                            player_iter.prompt = room.get_new_prompt()
-                            message = {
-                                "prompt": player_iter.prompt,
-                                "timeout": room.timeout
-                            }
-                            WebSocketHandler.send_updates(player_iter.token, message)
-                            # Create histories
-                            room.histories.append([("Computer", player_iter.prompt)])
-                    else:
-                        room.current_task_is_drawing = False
-                        for player_iter in room.players:
-                            player_iter.prompt = room.get_new_prompt()
-                            message = {
-                                "computer_supplied_prompt": player_iter.prompt,
-                                "timeout": room.timeout
-                            }
-                            WebSocketHandler.send_updates(player_iter.token, message)
-                            # Create histories
-                            room.histories.append([])
+                try:
+                    wordlist_chosen = parsed["wordlist_chosen"]
+                    logging.info(f"Chosen word list: {wordlist_chosen}")
 
-                    room.game_state = GameState.PLAYING
-                    update_dashboard(room)
-                    logging.info(f"Histories: {room.histories}")
-                    logging.info(f"Room: {room}")
-                    return
-            elif room.game_state is GameState.PLAYING:
-                # Presenter stuff
-                pass
-            elif room.game_state is GameState.POSTGAME:
-                if parsed["command"] == "start_new_game":
+                    if wordlist_chosen == "advanced":
+                        load_wordlist_from_file(room, "advanced.txt")
+
+                    elif wordlist_chosen == "custom":
+                        words_unparsed = str(parsed["custom_words"])
+                        words = []
+                        for w in words_unparsed.split(","):
+                            words.append(re.sub('[^a-zA-Z0-9 \'"äöüß]', '', w.strip()))
+
+                        logging.info(f"Words: {words}")
+
+                        if len(words) >= len(room.players):
+                            room.prompts = words
+                except:
+                    pass
+
+                logging.info(f"Words loaded: {room.prompts}")
+
+                # Check if history logging allowed
+                try:
+                    room.allow_history_dumps = bool(parsed["allow_history_logging"])
+                except:
+                    pass
+                logging.info(f"History logging allowed: {room.allow_history_dumps}")
+
+                random.shuffle(room.prompts)
+
+                # Setup ready
+
+                # Should players draw first, or supply a prompt?
+                if room.max_rounds % 2 == 0:
+                    room.current_task_is_drawing = True
                     for p in room.players:
-                        message = {
-                            "game_state": room.game_state,
-                            "command": "reload"
-                        }
-                        WebSocketHandler.send_updates(p.token, message)
-                    logging.info(f"Reloading game with room_id {parsed['room_id']}")
-                    del rooms[parsed["room_id"]]
+                        p.prompt = room.get_new_prompt()
+                        message = {"prompt": p.prompt}
+                        update_current_task(room, p.token, message)
 
-        else:
-            # Check if a player sent a message
-            player = None
-            player_pos = -1
-            for i in range(len(room.players)):
-                player_iter = room.players[i]
-                if parsed["token"] == player_iter.token:
-                    player = player_iter
-                    player_pos = i
+                        # Create histories
+                        room.histories.append([("Computer", p.prompt)])
+                else:
+                    room.current_task_is_drawing = False
+                    for p in room.players:
+                        p.prompt = room.get_new_prompt()
+                        message = {"computer_supplied_prompt": p.prompt}
+                        update_current_task(room, p.token, message)
 
-            if player is None:
-                logging.info("Player not found")
+                        # Create histories
+                        room.histories.append([])
+
+                room.game_state = GameState.PLAYING
+                update_game_status(room)
+                logging.info(f"Histories: {room.histories}")
+                logging.info(f"Room: {room}")
                 return
 
-            if room.game_state is GameState.PREGAME:
-                if "command" in parsed:
-                    if parsed["command"] == "leave_game":
-                        del room.players[player_pos]
-                        update_dashboard(room)
-                    return
+        # Check if a player sent a message
+        player = None
+        player_pos = -1
+        for i in range(len(room.players)):
+            p = room.players[i]
+            if parsed["token"] == p.token:
+                player = p
+                player_pos = i
 
-            elif room.game_state is GameState.PLAYING:
-                # Check if someone refreshes the page, give them the current game state
-                if "command" in parsed:
-                    if parsed["command"] == "reconnect_check":
-                        logging.info(f"Player wants to reconnect: {player}")
-                        if player.is_ready:
-                            return
+        if player is None:
+            logging.info("Player not found")
+            return
+
+        if room.game_state is GameState.PREGAME:
+            if "command" in parsed:
+                if parsed["command"] == "leave_game":
+                    del room.players[player_pos]
+
+                update_game_status(room, {"command": "show_pregame"})
+
+        elif room.game_state is GameState.PLAYING:
+            # Check if someone refreshes the page, give them the current game state
+            if "command" in parsed:
+                if parsed["command"] == "reconnect_check":
+                    logging.info(f"Player wants to reconnect: {player}")
+                    if not player.is_ready:
                         if room.current_task_is_drawing:
-                            message = {
-                                "prompt": player.prompt,
-                                "timeout": room.timeout
-                            }
+                            message = {"prompt": player.prompt}
                         else:
                             # Check if it's the first round, i.e. players supply first prompts
                             if room.round_count == 1:
-                                message = {
-                                    "computer_supplied_prompt": player.prompt,
-                                    "timeout": room.timeout
-                                }
+                                message = {"computer_supplied_prompt": player.prompt}
                             else:
-                                message = {
-                                    "image": player.image,
-                                    "timeout": room.timeout
-                                }
-                        WebSocketHandler.send_updates(player.token, message)
-                        update_dashboard(room)
+                                message = {"image": player.image}
+                        update_current_task(room, player.token, message)
 
-                    # Ignore other commands
-                    return
+                update_game_status(room)
 
-                # Last round if round threshold reached
-                logging.info(f"Room count: {room.round_count} of {room.max_rounds}")
-                if room.round_count >= room.max_rounds:
-                    logging.info("Round count reached")
-                    # Get last prompt
-                    player.prompt = parsed["prompt"]
-                    player.is_ready = True
+                # Ignore other commands
+                return
 
-                    # Update UI
-                    update_dashboard(room)
+            # Last round if round threshold reached
+            logging.info(f"Room count: {room.round_count} of {room.max_rounds}")
+            if room.round_count >= room.max_rounds:
+                logging.info("Round count reached")
+                # Get last prompt
+                player.prompt = parsed["prompt"]
+                player.is_ready = True
 
-                    for player_iter in room.players:
-                        if not player_iter.is_ready:
-                            return
+                # Update UI
+                update_game_status(room)
 
-                    # Update histories
-                    for i in range(len(room.players)):
-                        room.histories[i].append((room.players[i].name, room.players[i].prompt))
+                for p in room.players:
+                    if not p.is_ready:
+                        return
 
-                    room.game_state = GameState.POSTGAME
+                # Update histories
+                for i in range(len(room.players)):
+                    room.histories[i].append((room.players[i].name, room.players[i].prompt))
 
-                    message = {
-                        "game_state": room.game_state,
-                        "histories": room.histories
-                    }
-                    WebSocketHandler.send_updates(room.presenter.token, message)
+                room.game_state = GameState.POSTGAME
 
-                    if room.allow_history_dumps:
-                        dump_histories_to_file(room.histories)
-                    
-                    return
+                message = {
+                    "command": "show_histories",
+                    "histories": room.histories
+                }
+                update_game_status(room, message)
 
-                elif room.current_task_is_drawing:
-                    player.image = parsed["image"]
-                    player.is_ready = True
+                if room.allow_history_dumps:
+                    dump_histories_to_file(room.histories)
 
-                    # Update UI
-                    update_dashboard(room)
+                return
 
-                    for player_iter in room.players:
-                        if not player_iter.is_ready:
-                            return
+            elif room.current_task_is_drawing:
+                player.image = parsed["image"]
+                player.is_ready = True
 
-                    # All players ready
+                # Update UI
+                update_game_status(room)
 
-                    # Update histories
-                    for i in range(len(room.players)):
-                        room.histories[i].append((room.players[i].name, room.players[i].image))
+                for p in room.players:
+                    if not p.is_ready:
+                        return
 
-                    # Give next player the image
-                    tmp_image = room.players[len(room.players) - 1].image
+                # All players ready
 
-                    for i in range(len(room.players) - 1, 0, -1):
-                        room.players[i].image = room.players[i-1].image
+                # Update histories
+                for i in range(len(room.players)):
+                    room.histories[i].append((room.players[i].name, room.players[i].image))
 
-                    # Give first player last player's image
-                    room.players[0].image = tmp_image
+                # Give next player the image
+                tmp_image = room.players[len(room.players) - 1].image
 
-                    # Send updates
-                    for i in range(len(room.players)):
-                        message = {
-                            "image": room.players[i].image,
-                            "timeout": room.timeout
-                        }
-                        WebSocketHandler.send_updates(room.players[i].token, message)
+                for i in range(len(room.players) - 1, 0, -1):
+                    room.players[i].image = room.players[i-1].image
 
-                else:
-                    player.prompt = parsed["prompt"]
-                    player.is_ready = True
+                # Give first player last player's image
+                room.players[0].image = tmp_image
 
-                    # Update UI
-                    update_dashboard(room)
+                # Send updates
+                for i in range(len(room.players)):
+                    message = {"image": room.players[i].image}
+                    update_current_task(room, room.players[i].token, message)
 
-                    for player_iter in room.players:
-                        if not player_iter.is_ready:
-                            return
+            else:
+                player.prompt = parsed["prompt"]
+                player.is_ready = True
 
-                    # All players ready
+                # Update UI
+                update_game_status(room)
 
-                    print(room.histories)
-                    print(room.players)
-                    # Update histories
-                    for i in range(len(room.players)):
-                        print(f"Adding {room.players[i]}")
-                        room.histories[i].append((room.players[i].name, room.players[i].prompt))
+                for p in room.players:
+                    if not p.is_ready:
+                        return
 
-                    # Give next player the prompt
-                    tmp_prompt = room.players[len(room.players) - 1].prompt
+                # All players ready
 
-                    for i in range(len(room.players) - 1, 0, -1):
-                        room.players[i].prompt = room.players[i-1].prompt
+                print(room.histories)
+                print(room.players)
+                # Update histories
+                for i in range(len(room.players)):
+                    print(f"Adding {room.players[i]}")
+                    room.histories[i].append((room.players[i].name, room.players[i].prompt))
 
-                    # Give first player last player's prompt
-                    room.players[0].prompt = tmp_prompt
+                # Give next player the prompt
+                tmp_prompt = room.players[len(room.players) - 1].prompt
 
-                    # Send updates
-                    for i in range(len(room.players)):
-                        message = {
-                            "prompt": room.players[i].prompt,
-                            "timeout": room.timeout
-                        }
-                        WebSocketHandler.send_updates(room.players[i].token, message)
+                for i in range(len(room.players) - 1, 0, -1):
+                    room.players[i].prompt = room.players[i-1].prompt
 
-                # Set all players unready
-                for player_iter in room.players:
-                    player_iter.is_ready = False
+                # Give first player last player's prompt
+                room.players[0].prompt = tmp_prompt
 
-                room.current_task_is_drawing = not room.current_task_is_drawing
-                room.round_count += 1
-                update_dashboard(room)
+                # Send updates
+                for i in range(len(room.players)):
+                    message = {"prompt": room.players[i].prompt}
+                    update_current_task(room, room.players[i].token, message)
 
-                # Update histories: Right shift one
-                logging.info(f"Before shifting Histories: {room.histories}")
-                logging.info(f"Room is {room}")
-                list_tmp = room.histories.pop()
-                room.histories.insert(0, list_tmp)
-                logging.info(f"After shifting Histories: {room.histories}")
+            # Set all players unready
+            for p in room.players:
+                p.is_ready = False
+
+            room.current_task_is_drawing = not room.current_task_is_drawing
+            room.round_count += 1
+            update_game_status(room)
+
+            # Update histories: Right shift one
+            logging.info(f"Before shifting Histories: {room.histories}")
+            logging.info(f"Room is {room}")
+            list_tmp = room.histories.pop()
+            room.histories.insert(0, list_tmp)
+            logging.info(f"After shifting Histories: {room.histories}")
+
+        elif room.game_state is GameState.POSTGAME:
+            if parsed["command"] == "start_new_game":
+                message = {"command": "reload"}
+                update_game_status(room, message)
+                logging.info(f"Reloading game with room_id {parsed['room_id']}")
+                del rooms[parsed["room_id"]]
 
 
 class PrivacyHandler(tornado.web.RequestHandler):

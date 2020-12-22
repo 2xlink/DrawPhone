@@ -8,218 +8,78 @@
 </head>
 <body>
 <script src="{{ static_url('helpers.js') }}" type="text/javascript"></script>
-<script type="text/javascript">
-    var vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
-    vw = Math.min(vw, 400) - 20
 
-    var sketchpad1
-    var sketchpad2
-    var prompt_input
-    var body
-    var timeout
-    var timeout_counter
-    var timeout_function
-    var timeout_has_started = false
+<!-- PREGAME -->
+<div id="div_presenter_pre_game" style="display: none;">
+    <div id="div_presenter_pre_game_title" class="title">Connected Players (0)</div>
+    <div id="div_presenter_pre_game_player_list"></div>
+    <div id="copy_room" class="minor_text_element" onclick="copy_room_to_clipboard()">Click to Copy Room ID</div>
+    <div id="div_presenter_settings" style="display: none;">
+        <div class="minor_text_element">
+            Timeout (in Seconds)
+            <input id="timeout_input" class="input input_small" placeholder="[No Timeout]" pattern="[0-9]*">
+        </div>
+        <div class="minor_text_element">
+            Max. Number of Rounds
+            <input id="rounds_input" class="input input_small" placeholder="0" min="2" pattern="[0-9]*">
+        </div>
+        <div class="minor_text_element">
+            Wordlist to Use<br>
+            <select id="wordlist_dropdown" class="input" name="wordlist_dropdown" onchange="wordlist_change()">
+                <option value="default">Simple Words (German)</option>
+                <option value="advanced">Advanced Words (German)</option>
+                <option value="custom">Custom Words</option>
+                <option value="sexy" disabled>18+ Words (WIP)</option>
+            </select>
+            <div id="custom_wordlist_div" style="display: none;">
+                <input id="custom_wordlist"
+                       placeholder="Pizza Hawaii, Eiffelturm, Vincent van Gogh, …"
+                >
+            </div>
+        </div>
+        <div class="minor_text_element">
+            <table style="margin: auto;">
+    <!--            <col style="width:70%">-->
+    <!--            <col style="width:30%">-->
+                <tbody>
+                    <td>
+                        Allow history logging for cool data analysis
+                    </td>
+                    <td>
+                        <input id="logging_input" type="checkbox">
+                    </td>
+                </tbody>
+            </table>
+        </div>
+        <button id="start_button" class="button" disabled onclick="startGame()">Start Game</button></p>
+    </div>
+    <div id="presenter_pregame_waiting">
+        <div class="minor_text_element">
+            Waiting for host to start the game …
+        </div>
+    </div>
+</div>
 
-    body = document.body
-    body.style.width = vw + "px"
+<!-- div_presenter_playing -->
+<div id="div_presenter_playing" style="display: none">
+    <p id="div_presenter_playing_title" class="title"></p>
+    <p class="title">Look at your device</p>
+    <p class="text_element">Players ready</p>
+    <p id="div_presenter_playing_player_list_ready"></p>
+    <p class="text_element">Players not yet ready</p>
+    <p id="div_presenter_playing_player_list_not_ready"></p>
+    <div id="div_timeout_counter" class="text_element" style="display: none;"></div>
+</div>
 
-    var ws
-    if (window.location.protocol == "https:") {
-        ws = new WebSocket("wss://{{ host }}/websocket");
-    } else {
-        ws = new WebSocket("ws://{{ host }}/websocket");
-    }
-
-    ws.onopen = function() {
-        ret = {
-            "token": getCookie("token"),
-            "room_id": findGetParameter("room_id"),
-            "command": "reconnect_check"
-        }
-        ws.send(JSON.stringify(ret))
-    };
-
-
-    ws.onmessage = function (evt) {
-        console.log(evt.data)
-        data = JSON.parse(evt.data)
-        document.getElementById('div_wait').style.display = "none"
-
-        // If prompt has timeout, set it and start visual countdown
-        if ("timeout" in data) {
-            timeout = data["timeout"] * 1000
-            timeout_counter = timeout / 1000
-
-            if (timeout != 0) {
-                f = async function() {
-                    b1 = document.getElementById('button_send_prompt')
-                    b2 = document.getElementById('button_send_image')
-
-                    while(true) {
-                        timeout_counter -= 1
-                        if (timeout_counter < 0) timeout_counter = 0
-
-                        b1.innerText = "Send - " + timeout_counter + " seconds remaining!"
-                        b2.innerText = "Send - " + timeout_counter + " seconds remaining!"
-
-                        await sleep(1000)
-                    }
-                }
-
-                if (!timeout_has_started) {
-                    timeout_has_started = true
-                    f()
-                }
-            }
-        }
-
-        if ("prompt" in data) {
-            document.getElementById('div_draw').style.display = "unset"
-            document.getElementById("prompt_supplied").innerText = data["prompt"]
-
-            document.getElementById('button_send_image').disabled = true
-            setTimeout(() => {
-                document.getElementById('button_send_image').disabled = false
-            }, 3000)
-
-            if (timeout != 0) {
-                console.log("Setting drawing timeout to " + timeout)
-                timeout_function = setTimeout(() => sendImage(), timeout)
-                timeout_counter = timeout / 1000
-            }
-        }
-        else if ("image" in data) {
-        // TODO: clear sketchpads and prompts
-            document.getElementById('div_prompt').style.display = "unset"
-            settings = data["image"]
-            settings.element = '#sketchpad_supplied'
-            supplied_vw = settings.width
-            scale_factor = vw / supplied_vw
-
-            // Scale drawn thing to our vw
-            settings.strokes.forEach(stroke => {
-                stroke.lines.forEach(line => {
-                    line.start.x = scale_factor * line.start.x
-                    line.start.y = scale_factor * line.start.y
-                    line.end.x = scale_factor * line.end.x
-                    line.end.y = scale_factor * line.end.y
-                })
-            })
-
-            settings.width = vw
-            settings.height = vw
-            sketchpad2 = new Sketchpad(settings)
-
-            if (timeout != 0) {
-                console.log("Setting prompt timeout to " + timeout)
-                timeout_function = setTimeout(() => sendPrompt(), timeout)
-                timeout_counter = timeout / 1000
-            }
-        }
-        else if ("computer_supplied_prompt" in data) {
-            document.getElementById('div_submit_first_prompt').style.display = "unset"
-            computer_supplied_prompt = data["computer_supplied_prompt"]
-        }
-        else if ("command" in data) {
-            ws.close()
-            if (data["command"] == "reload") {
-                setTimeout(_ => location.reload(), 2000)
-            }
-        }
-    }
-
-    window.addEventListener("beforeunload",function(event) {
-        ret = {
-            "token": getCookie("token"),
-            "room_id": findGetParameter("room_id"),
-            "command": "leave_game"
-        }
-        ws.send(JSON.stringify(ret))
-    })
-
-    function sendImage() {
-        ret = {
-            "token": getCookie("token"),
-            "room_id": findGetParameter("room_id"),
-            "image": sketchpad1.toObject()
-<!--            "image": document.getElementById('sketchpad_input').toDataURL()-->
-        }
-        ws.send(JSON.stringify(ret))
-
-        document.getElementById('div_draw').style.display = "none"
-        document.getElementById('div_wait').style.display = "unset"
-
-        // Clearing is broken, as previous strokes seem to be drawn on top
-        // Clear sketchpad, remove the canvas and add it anew
-        sketchpad1.canvas.remove()
-        new_canvas = document.createElement("canvas")
-        new_canvas.classList.add("sketchpad")
-        new_canvas.id = "sketchpad_input"
-        document.getElementById('sketchpad_input_root').appendChild(new_canvas)
-
-        sketchpad1 = new Sketchpad({
-          element: '#sketchpad_input',
-          width: vw,
-          height: vw
-        });
-
-        if (typeof timeout_function !== undefined) {
-            clearTimeout(timeout_function);
-        }
-    }
-
-    function sendPrompt() {
-        ret = {
-            "token": getCookie("token"),
-            "room_id": findGetParameter("room_id"),
-            "prompt": prompt_input.value
-        }
-        ws.send(JSON.stringify(ret))
-
-        document.getElementById('div_prompt').style.display = "none"
-        document.getElementById('div_wait').style.display = "unset"
-
-        prompt_input.value = ""
-        // sketchpad2.clear()
-
-        if (typeof timeout_function !== undefined) {
-            clearTimeout(timeout_function);
-        }
-
-        document.getElementById('button_send_prompt').disabled = true
-    }
-
-    function sendFirstPrompt(chose_computer_supplied) {
-        if (chose_computer_supplied) {
-            prompt = computer_supplied_prompt
-        }
-        else {
-            prompt = document.getElementById("input_first_prompt").value
-        }
-
-        ret = {
-            "token": getCookie("token"),
-            "room_id": findGetParameter("room_id"),
-            "prompt": prompt
-        }
-        ws.send(JSON.stringify(ret))
-
-        document.getElementById('div_submit_first_prompt').style.display = "none"
-        document.getElementById('div_wait').style.display = "unset"
-
-        document.getElementById('button_send_first_prompt').disabled = true
-        document.getElementById('input_first_prompt').value = ""
-    }
-
-    function change_stroke_color(color) {
-        sketchpad1.color = '#' + color
-    }
-
-    function change_stroke_size(size) {
-        sketchpad1.penSize = size
-    }
-</script>
+<!-- POSTGAME -->
+<div id="div_presenter_post_game" style="display: none">
+    <div class="title">Results</div>
+    <div id="history"></div>
+    <div>
+        <button id="button_start_new_game" onclick="start_new_game()"
+                class="fade_in button" style="display: none;">Play again</button>
+    </div>
+</div>
 
 <div id="div_draw" style="display: none">
     <p class="text_element">It's your turn to draw: <span id="prompt_supplied"></span></p>
@@ -235,7 +95,7 @@
         <button class="color_button" onclick="change_stroke_color('FFCC00')" style="background-color: #FFCC00;"></button>
         <button class="color_button" onclick="change_stroke_color('FFFF33')" style="background-color: #FFFF33;"></button>
         <button class="color_button" onclick="change_stroke_color('5B3A29')" style="background-color: #5B3A29;"></button>
-        <button class="color_button" onclick="change_stroke_color('555555')" style="background-color: #555555;"></button>
+        <button class="color_button" onclick="change_stroke_color('000000')" style="background-color: #000000;"></button>
         <button class="color_button" onclick="change_stroke_size(5)">
             <img src="{{ static_url('img/2.png') }}"/>
         </button>
@@ -277,22 +137,14 @@
         onclick='sendFirstPrompt(true)'>Let the computer choose for me</button>
 </div>
 
-<div id="div_wait">
-    <p class="text_element">Look at the presenter screen</p>
-</div>
-
 <script src="{{ static_url('jquery.min.js') }}" type="text/javascript"></script>
 <script src="{{ static_url('sketchpad.js') }}" type="text/javascript"></script>
 
 <script type="text/javascript">
-    sketchpad1 = new Sketchpad({
-      element: '#sketchpad_input',
-      width: vw,
-      height: vw
-    });
-
-    prompt_input = document.getElementById("prompt_input")
+    // Set the hostname from the template engine
+    var hostname = "{{ host }}"
 </script>
+<script src="{{ static_url('webclient.js') }}" type="text/javascript"></script>
 
 <!-- Matomo -->
 <script type="text/javascript">

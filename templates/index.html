@@ -43,37 +43,16 @@
 </div>
 
 <script type="text/javascript">
-    var ws
-    if (window.location.protocol == "https:") {
-        ws = new WebSocket("wss://{{ host }}/websocket");
-    } else {
-        ws = new WebSocket("ws://{{ host }}/websocket");
-    }
+    commits = "{{ commits }}"
+    commits_div = document.getElementById("commits_div")
+    commits_list_div = document.getElementById("commits_list_div")
+    commits_div.style.display = "block"
 
-    ws.onopen = function() {
-        ret = {
-            "command": "get_commits"
-        }
-        ws.send(JSON.stringify(ret))
-    };
-
-    ws.onmessage = function (evt) {
-        console.log(evt.data);
-        data = JSON.parse(evt.data)
-
-        if ("commits" in data) {
-            commits = data["commits"]
-            commits_div = document.getElementById("commits_div")
-            commits_list_div = document.getElementById("commits_list_div")
-            commits_div.style.display = "block"
-
-            commits.forEach(c => {
-                e = document.createElement("p")
-                e.innerText = c
-                commits_list_div.appendChild(e)
-            })
-        }
-    }
+    commits.split("!!DELIM!!").forEach(c => {
+        e = document.createElement("p")
+        e.innerText = c
+        commits_list_div.appendChild(e)
+    })
 </script>
 
 <!-- Matomo -->
