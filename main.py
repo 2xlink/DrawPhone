@@ -591,7 +591,7 @@ def get_latest_commits():
             latest_commits.append(c["message"])
             i += 1
 
-        if i >= 3:
+        if i >= 6:
             break
 
     # latest_commits = ["Adds ability to set prompt on first round (Fixes #13)", "Updates words", "Fixes #15"]
