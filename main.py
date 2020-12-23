@@ -417,8 +417,12 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 
                 room.game_state = GameState.POSTGAME
 
+                # As histories can be very large, some extra logic to sync clients …
+                for p in room.players:
+                    p.is_ready = False
+
                 message = {
-                    "command": "show_histories",
+                    "command": "update_histories",
                     "histories": room.histories
                 }
                 update_game_status(room, message)
@@ -509,7 +513,20 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
             logging.info(f"After shifting Histories: {room.histories}")
 
         elif room.game_state is GameState.POSTGAME:
-            if parsed["command"] == "start_new_game":
+            if parsed["command"] == "history_received":
+                player.is_ready = True
+                for p in room.players:
+                    if not p.is_ready:
+                        return
+
+                # All players ready
+                message = {
+                    "command": "show_histories",
+                    "histories": room.histories
+                }
+                update_game_status(room, message)
+
+            elif parsed["command"] == "start_new_game":
                 message = {"command": "reload"}
                 update_game_status(room, message)
                 logging.info(f"Reloading game with room_id {parsed['room_id']}")

@@ -48,6 +48,7 @@ var div_submit_first_prompt = document.getElementById("div_submit_first_prompt")
 var input_first_prompt = document.getElementById("input_first_prompt")
 var button_send_first_prompt = document.getElementById("button_send_first_prompt")
 var div_presenter_pregame_waiting = document.getElementById("presenter_pregame_waiting")
+var div_loader = document.getElementById("div_loader")
 
 body = document.body
 body.style.width = vw + "px"
@@ -137,11 +138,21 @@ ws.onmessage = function (evt) {
         }
         show_player_list()
     }
-    else if (command == "show_histories") {
+    else if (command == "update_histories") {
+        div_loader.style.display = "block"
         div_presenter_playing.style.display = "none"
-        div_presenter_post_game.style.display = "unset"
-
         histories = data["histories"]
+
+        ret = {
+            "token": getCookie("token"),
+            "room_id": findGetParameter("room_id"),
+            "command": "history_received"
+        }
+        ws.send(JSON.stringify(ret))
+    }
+    else if (command == "show_histories") {
+        div_loader.style.display = "none"
+        div_presenter_post_game.style.display = "unset"
         show_histories(histories)
     }
 
