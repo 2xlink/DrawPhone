@@ -6,6 +6,7 @@
     --font-light: #FFFFFF;
     --font-dark: #000000;
     --button: #da806a;
+    --minor-button: #a0a47a;
     --button-hover: #ea907a;
     --borders: #666666;
     --title: #ea907a;
@@ -82,21 +83,25 @@ body{
 }
 
 button {
-    background-color: var(--button); /* Green */
+    background-color: var(--button);
     border: none;
     color: var(--font-light);
     padding: 15px 32px;
     text-align: center;
     text-decoration: none;
-    margin: 4px 2px;
     cursor: pointer;
-    display: block;
-    margin: auto;
+    display: initial;
+    margin: 8px 8px 8px 8px;
     border-radius: 5px;
-  }
+}
+
+.minor_button {
+    background-color: var(--minor-button);
+}
 
 button:hover {
-    background-color: var(--button-hover); /* Green */
+    opacity: 0.85;
+    /* background-color: var(--button-hover); */
 }
 
 button:disabled {
@@ -111,10 +116,8 @@ button:disabled {
     margin-top: 10px;
 }
 
-.button_in_div {
-    display: block;
-    margin: auto;
-    margin-top: 5px;
+.center_buttons {
+    text-align: center;
 }
 
 .input {

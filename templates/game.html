@@ -13,7 +13,6 @@
 <div id="div_presenter_pre_game" style="display: none;">
     <div id="div_presenter_pre_game_title" class="title">Connected Players (0)</div>
     <div id="div_presenter_pre_game_player_list"></div>
-    <div id="copy_room" class="minor_text_element" onclick="copy_room_to_clipboard()">Click to Copy Room ID</div>
     <div id="div_presenter_settings" style="display: none;">
         <div class="minor_text_element">
             Timeout (in Seconds)
@@ -51,7 +50,13 @@
                 </tbody>
             </table>
         </div>
-        <button id="start_button" class="button" disabled onclick="startGame()">Start Game</button></p>
+    </div>
+    <div class="center_buttons">
+        <button id="copy_room" class="minor_button" onclick="copy_room_to_clipboard()">
+            Copy Room ID
+        </button>
+        <button id="start_button" class="button" disabled onclick="startGame()"
+            style="display: none;">Start Game</button></p>
     </div>
     <div id="presenter_pregame_waiting">
         <div class="minor_text_element">
@@ -74,9 +79,11 @@
 <div id="div_presenter_post_game" style="display: none">
     <div class="title">Results</div>
     <div id="history"></div>
-    <div>
+    <div class="center_buttons">
+        <button id="button_export_history" onclick="export_history()"
+                class="fade_in minor_button" style="display: none;">Download results</button>
         <button id="button_start_new_game" onclick="start_new_game()"
-                class="fade_in button" style="display: none;">Play again</button>
+                class="fade_in" style="display: none;">Play again</button>
     </div>
 </div>
 
@@ -139,6 +146,8 @@
 
 <script src="{{ static_url('jquery.min.js') }}" type="text/javascript"></script>
 <script src="{{ static_url('sketchpad.js') }}" type="text/javascript"></script>
+<script src="{{ static_url('html2canvas.min.js') }}" type="text/javascript"></script>
+<script src="{{ static_url('FileSaver.min.js') }}" type="text/javascript"></script>
 
 <script type="text/javascript">
     // Set the hostname from the template engine

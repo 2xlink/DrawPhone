@@ -33,6 +33,7 @@ var div_presenter_playing_player_list_not_ready = document.getElementById("div_p
 var div_timeout_counter = document.getElementById("div_timeout_counter")
 var div_presenter_post_game = document.getElementById("div_presenter_post_game")
 var div_history = document.getElementById("history")
+var button_export_history = document.getElementById("button_export_history")
 var button_start_new_game = document.getElementById("button_start_new_game")
 var div_draw = document.getElementById("div_draw")
 var prompt_supplied = document.getElementById("prompt_supplied")
@@ -113,6 +114,7 @@ ws.onmessage = function (evt) {
         is_busy = true
         div_presenter_pre_game.style.display = "block"
         div_presenter_settings.style.display = "block"
+        start_button.style.display = "initial"
         presenter_pregame_waiting.style.display = "none"
         show_pregame_player_list()
     }
@@ -429,9 +431,9 @@ show_histories = async function(histories) {
         await sleep(post_game_display_delay * 2)
     }
 
-    e = button_start_new_game
-    e.style.display = "block"
-    e.scrollIntoView({ behavior: 'smooth' })
+    button_export_history.style.display = "initial"
+    button_start_new_game.style.display = "initial"
+    button_start_new_game.scrollIntoView({ behavior: 'smooth' })
 }
 
 function startGame() {
@@ -469,6 +471,18 @@ function start_new_game() {
     ws.send(JSON.stringify(ret))
     button_start_new_game.disabled = true
     setTimeout(_ => location.reload(), 500)
+}
+
+function export_history() {
+    html2canvas(document.body, {
+      onrendered: function(canvas)
+      {
+        canvas.toBlob(function(blob) {
+          saveAs(blob, "results.png");
+        });
+      }
+    });
+    return false;
 }
 
 function copy_room_to_clipboard() {
