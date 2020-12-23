@@ -144,10 +144,10 @@ ws.onmessage = function (evt) {
     }
 
     else if (command == "reload") {
-        ws.close()
-        if (data["command"] == "reload") {
-            setTimeout(_ => location.reload(), 2000)
-        }
+//        ws.close()
+//        if (data["command"] == "reload") {
+//            setTimeout(_ => location.reload(), 2000)
+//        }
     }
 
     // game update
