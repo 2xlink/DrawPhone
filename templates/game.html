@@ -20,11 +20,16 @@
         </div>
         <div class="minor_text_element">
             Max. Number of Rounds
-            <input id="rounds_input" class="input input_small" placeholder="0" min="2" pattern="[0-9]*">
+            <input id="rounds_input" class="input input_small" placeholder="0" min="2"
+                   pattern="[0-9]*" onchange="update_rounds_hint()">
+            <div id="div_rounds_hint">
+
+            </div>
         </div>
         <div class="minor_text_element">
             Wordlist to Use<br>
-            <select id="wordlist_dropdown" class="input" name="wordlist_dropdown" onchange="wordlist_change()">
+            <select id="wordlist_dropdown" class="input" name="wordlist_dropdown"
+                    onchange="wordlist_change()">
                 <option value="default">Simple Words (German)</option>
                 <option value="advanced">Advanced Words (German)</option>
                 <option value="custom">Custom Words</option>

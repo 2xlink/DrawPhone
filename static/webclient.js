@@ -49,6 +49,7 @@ var input_first_prompt = document.getElementById("input_first_prompt")
 var button_send_first_prompt = document.getElementById("button_send_first_prompt")
 var div_presenter_pregame_waiting = document.getElementById("presenter_pregame_waiting")
 var div_loader = document.getElementById("div_loader")
+var div_rounds_hint = document.getElementById("div_rounds_hint")
 
 body = document.body
 body.style.width = vw + "px"
@@ -60,7 +61,6 @@ if (window.location.protocol == "https:") {
     ws = new WebSocket("ws://" + hostname + "/websocket");
 }
 
-var rounds_input
 var timeout_started = false
 
 ws.onopen = function() {
@@ -68,7 +68,6 @@ ws.onopen = function() {
         "token": getCookie("token"),
         "room_id": findGetParameter("room_id"),
         "command": "reconnect_check"
-        //"rounds": rounds_input.value
     }
     ws.send(JSON.stringify(ret))
 };
@@ -106,6 +105,24 @@ function show_pregame_player_list() {
         "Connected Players (" + data["players"][1].length + ")"
 }
 
+function update_rounds_hint() {
+    if (rounds_input.value != "") {
+        player_count = rounds_input.value
+    } else {
+        player_count = rounds_input.placeholder
+    }
+
+    try {
+        if (player_count % 2 == 0) {
+            div_rounds_hint.innerText = "Players will draw first"
+        }
+        else {
+            div_rounds_hint.innerText = "Players will supply prompts first"
+        }
+    }
+    catch(err) { }
+}
+
 ws.onmessage = function (evt) {
     console.log(evt.data);
     data = JSON.parse(evt.data)
@@ -124,6 +141,7 @@ ws.onmessage = function (evt) {
         show_pregame_player_list()
         start_button.disabled = data["players"][1].length < 2
         rounds_input.placeholder = data["players"][1].length
+        update_rounds_hint()
     }
     else if (command == "general_update" && !is_busy) {
         div_presenter_pre_game.style.display = "none"
@@ -261,8 +279,6 @@ window.addEventListener("beforeunload",function(event) {
     })
 
 function setup_client() {
-    rounds_input = rounds_input
-
     timeout = getCookie("timeout")
     round_count = getCookie("round_count")
     wordlist_chosen = getCookie("wordlist_chosen")
