@@ -582,11 +582,15 @@ def get_latest_commits():
     i = 0
     for event in parsed:
         if event["type"] != "PushEvent":
-            i += 1
             continue
 
-        latest_commits.append(event["payload"]["commits"][0]["message"])
-        i += 1
+        commits = event["payload"]["commits"]
+        commits.reverse()
+
+        for c in commits:
+            latest_commits.append(c["message"])
+            i += 1
+
         if i >= 3:
             break
 
