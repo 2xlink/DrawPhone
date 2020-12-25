@@ -552,7 +552,7 @@ def dump_histories_to_file(histories):
     filename = "history_dumps/" + \
                str(datetime.datetime.now()).replace(" ", "_").replace(":", "-") + ".txt"
     with open(filename, "x") as f:
-        f.write(histories.__repr__())
+        f.write(json.dumps(histories))
 
 
 def main():
