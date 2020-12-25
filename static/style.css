@@ -8,6 +8,7 @@
     --button: #da806a;
     --minor-button: #a0a47a;
     --button-hover: #ea907a;
+    --button-warning: #f92b20;
     --borders: #666666;
     --title: #ea907a;
 
@@ -131,8 +132,8 @@ button:disabled {
       box-shadow: 0 0 0px var(--button);
     }
     50% {
-      background-color: var(--button);
-      box-shadow: 0 0 15px var(--button);
+      background-color: var(--button-warning);
+      box-shadow: 0 0 20px var(--button-warning);
 }
     100% {
       background-color: var(--button);

@@ -124,7 +124,7 @@ function update_rounds_hint() {
 }
 
 ws.onmessage = function (evt) {
-    console.log(evt.data);
+//    console.log(evt.data);
     data = JSON.parse(evt.data)
     command = data["command"]
 
@@ -396,7 +396,7 @@ function change_stroke_size(size) {
 
 show_histories = async function(histories) {
     await sleep(post_game_display_delay)
-    console.log(histories)
+//    console.log(histories)
 
     for (i1 = 0; i1 < histories.length; i1++) {
         hist = histories[i1]
