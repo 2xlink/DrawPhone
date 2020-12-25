@@ -121,6 +121,25 @@ button:disabled {
     margin-top: 10px;
 }
 
+.button_flashing {
+    animation: flashing 1300ms infinite;
+}
+
+@keyframes flashing {
+    0% {
+      background-color: var(--button);
+      box-shadow: 0 0 0px var(--button);
+    }
+    50% {
+      background-color: var(--button);
+      box-shadow: 0 0 15px var(--button);
+}
+    100% {
+      background-color: var(--button);
+      box-shadow: 0 0 0px var(--button);
+    }
+}
+
 .center_buttons {
     text-align: center;
 }

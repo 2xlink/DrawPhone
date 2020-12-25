@@ -194,18 +194,23 @@ ws.onmessage = function (evt) {
             timeout = data["timeout"] * 1000
             timeout_counter = timeout / 1000
 
+            button_send_prompt.classList.remove("button_flashing")
+            button_send_image.classList.remove("button_flashing")
+
             if (timeout != 0) {
                 f = async function() {
-                    b1 = button_send_prompt
-                    b2 = button_send_image
-
                     while(true) {
                         timeout_counter -= 1
                         if (timeout_counter < 0) timeout_counter = 0
 
-                        b1.innerText = "Send - " + timeout_counter + " seconds remaining!"
-                        b2.innerText = "Send - " + timeout_counter + " seconds remaining!"
+                        button_send_prompt.innerText = "Send - " + timeout_counter + " seconds remaining!"
+                        button_send_image.innerText = "Send - " + timeout_counter + " seconds remaining!"
                         div_timeout_counter.innerText = timeout_counter + " seconds remaining!"
+
+                        if (timeout_counter == 10) {
+                            button_send_prompt.classList.add("button_flashing")
+                            button_send_image.classList.add("button_flashing")
+                        }
 
                         await sleep(1000)
                     }
