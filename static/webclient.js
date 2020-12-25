@@ -238,7 +238,7 @@ ws.onmessage = function (evt) {
         else if ("image" in data) {
             div_prompt.style.display = "unset"
             settings = data["image"]
-            settings.element = '#sketchpad_supplied'
+            settings.element = sketchpad_supplied
             supplied_vw = settings.width
             scale_factor = vw / supplied_vw
 
@@ -415,6 +415,7 @@ show_histories = async function(histories) {
 
                 e = document.createElement("canvas")
                 e.classList.add("sketchpad")
+                e.classList.add("sketchpad_nopointer")
 
                 d.classList.add("fade_in", "minor_text_element")
                 e.classList.add("fade_in", "sketchpad")

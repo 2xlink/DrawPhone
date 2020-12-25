@@ -18,12 +18,17 @@
 body{
     background-color: var(--background);
 }
+
 .sketchpad {
     box-shadow: 2px 2px 5px 0px rgba(50, 50, 50, 0.75);
     margin: auto;
     margin-bottom: 20px;
     margin-top: 20px;
     display: block;
+}
+
+.sketchpad_nopointer {
+    pointer-events: none;
 }
 
 .color_button {
