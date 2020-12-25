@@ -476,11 +476,11 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 
                 # All players ready
 
-                print(room.histories)
-                print(room.players)
+                logging.debug(room.histories)
+                logging.debug(room.players)
                 # Update histories
                 for i in range(len(room.players)):
-                    print(f"Adding {room.players[i]}")
+                    logging.debug(f"Adding {room.players[i]}")
                     room.histories[i].append((room.players[i].name, room.players[i].prompt))
 
                 # Give next player the prompt
