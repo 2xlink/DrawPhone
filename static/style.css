@@ -123,7 +123,7 @@ button:disabled {
 }
 
 .button_flashing {
-    animation: flashing 1300ms infinite;
+    animation: flashing 1000ms infinite;
 }
 
 @keyframes flashing {
