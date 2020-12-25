@@ -422,6 +422,11 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                     p.is_ready = False
 
                 message = {
+                    "command": "prepare_receiving_histories"
+                }
+                update_game_status(room, message)
+
+                message = {
                     "command": "update_histories",
                     "histories": room.histories
                 }
@@ -519,9 +524,9 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                         return
 
                 # All players ready
+                # Try to sync clients …
                 message = {
-                    "command": "show_histories",
-                    "histories": room.histories
+                    "command": "show_histories"
                 }
                 update_game_status(room, message)
 

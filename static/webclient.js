@@ -156,9 +156,11 @@ ws.onmessage = function (evt) {
         }
         show_player_list()
     }
-    else if (command == "update_histories") {
+    else if (command == "prepare_receiving_histories") {
         div_loader.style.display = "block"
         div_presenter_playing.style.display = "none"
+    }
+    else if (command == "update_histories") {
         histories = data["histories"]
 
         ret = {
