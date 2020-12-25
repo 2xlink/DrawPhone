@@ -244,14 +244,14 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
     def send_updates(cls, token: str, message):
         for waiter in cls.waiters:
             try:
-                logging.info(f"Send message {message} with {token} to {waiter.token}? {token == waiter.token}")
+                logging.debug(f"Send message {message} with {token} to {waiter.token}? {token == waiter.token}")
                 if token == waiter.token:
                     waiter.write_message(message)
             except:
                 logging.error("Error sending message", exc_info=True)
 
     def on_message(self, message):
-        logging.info("got message %r", message)
+        logging.debug("got message %r", message)
         parsed = tornado.escape.json_decode(message)
 
         if "room_id" not in parsed or parsed["room_id"] not in rooms:
@@ -309,14 +309,14 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                         for w in words_unparsed.split(","):
                             words.append(re.sub('[^a-zA-Z0-9 \'"äöüß]', '', w.strip()))
 
-                        logging.info(f"Words: {words}")
+                        logging.debug(f"Words: {words}")
 
                         if len(words) >= len(room.players):
                             room.prompts = words
                 except:
                     pass
 
-                logging.info(f"Words loaded: {room.prompts}")
+                logging.debug(f"Words loaded: {room.prompts}")
 
                 # Check if history logging allowed
                 try:
@@ -351,7 +351,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 
                 room.game_state = GameState.PLAYING
                 update_game_status(room)
-                logging.info(f"Histories: {room.histories}")
+                logging.debug(f"Histories: {room.histories}")
                 logging.info(f"Room: {room}")
                 return
 
@@ -506,11 +506,10 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
             update_game_status(room)
 
             # Update histories: Right shift one
-            logging.info(f"Before shifting Histories: {room.histories}")
-            logging.info(f"Room is {room}")
+            logging.debug(f"Before shifting Histories: {room.histories}")
             list_tmp = room.histories.pop()
             room.histories.insert(0, list_tmp)
-            logging.info(f"After shifting Histories: {room.histories}")
+            logging.debug(f"After shifting Histories: {room.histories}")
 
         elif room.game_state is GameState.POSTGAME:
             if parsed["command"] == "history_received":
@@ -595,7 +594,7 @@ def get_latest_commits():
             break
 
     # latest_commits = ["Adds ability to set prompt on first round (Fixes #13)", "Updates words", "Fixes #15"]
-    logging.info(f"Got latest commits: {latest_commits}")
+    logging.debug(f"Got latest commits: {latest_commits}")
 
 
 if __name__ == "__main__":
