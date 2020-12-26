@@ -512,8 +512,12 @@ function export_history() {
     html2canvas(document.body, {
       onrendered: function(canvas)
       {
+        var today = new Date();
+        var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+        date += " " + today.getHours() + "-" + today.getMinutes()
+
         canvas.toBlob(function(blob) {
-          saveAs(blob, "results.png");
+          saveAs(blob, "Drawphone " + date + ".png");
         });
       }
     });
