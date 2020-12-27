@@ -10,6 +10,10 @@ function getCookie(name) {
     return null;
 }
 
+function deleteCookie(name) {
+    document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+}
+
 function findGetParameter(parameterName) {
     var result = null,
         tmp = [];

@@ -102,7 +102,7 @@ function show_pregame_player_list() {
 
         if (is_presenter) {
             e = document.createElement("div")
-            e.classList.add("kick_button", "fa", "fa-times")
+            e.classList.add("player_list_button", "fa", "fa-times", "button_kick")
             e.addEventListener("click", function() {
                 console.log("Kick player " + p)
                 ret = {
@@ -116,6 +116,21 @@ function show_pregame_player_list() {
 
             d.appendChild(e)
         }
+
+        if (p[0] == getCookie("name")) {
+            e = document.createElement("div")
+            e.classList.add("player_list_button", "fa", "fa-pencil", "button_edit")
+            e.addEventListener("click", function() {
+                console.log("Rename player " + p)
+                deleteCookie("name")
+                location.reload()
+            });
+        }
+        else {
+            e = document.createElement("div")
+            e.classList.add("player_list_button")
+        }
+        d.appendChild(e)
 
         div_presenter_pre_game_player_list.appendChild(d)
     })
@@ -204,7 +219,7 @@ ws.onmessage = function (evt) {
 //        }
     }
 
-    else if (command = "kicked") {
+    else if (command == "kicked") {
         location = "/"
     }
 

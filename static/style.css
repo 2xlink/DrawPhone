@@ -64,9 +64,8 @@ body{
     margin-bottom: 20px;
 }
 
-.kick_button {
+.player_list_button {
     border: none;
-    color: var(--button-warning);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -75,6 +74,14 @@ body{
     height: 20px;
     float: right;
     cursor: pointer;
+}
+
+.button_kick {
+    color: var(--button-warning);
+}
+
+.button_edit {
+    color: var(--font-dark);
 }
 
 .title {
