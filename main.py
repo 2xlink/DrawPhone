@@ -9,6 +9,7 @@ import json
 import os.path
 import uuid
 import logging
+from urllib.parse import quote, unquote
 
 import tornado.escape
 import tornado.ioloop
@@ -111,6 +112,8 @@ class MainHandler(tornado.web.RequestHandler):
 
     def get(self):
         room_id_param = self.get_arguments("room_id")
+        logging.debug(f"main GET. Request: {self.cookies}")
+        logging.debug(f"Rooms: {rooms}")
 
         # Delete rooms which were not accessed in the last 20 minutes
         rooms_to_delete = []
@@ -133,6 +136,8 @@ class MainHandler(tornado.web.RequestHandler):
             if name is None:
                 self.render("player_setup.html", host=tornado.options.options.as_dict().get('host'))
                 return
+            name = unquote(quote(name, encoding='iso8859-1'), encoding='utf-8')
+            logging.debug(f"Supplied name: {name}")
             name = re.sub('[^a-zA-Z0-9äöüß]', '', name)
 
             # If room does not exist, create it and set requester to presenter
@@ -149,14 +154,11 @@ class MainHandler(tornado.web.RequestHandler):
                 if room.presenter.token == self.get_cookie("token") and \
                         room.game_state is GameState.PREGAME:
                     # Add the presenter as a player again
-                    name = re.sub('[^a-zA-Z0-9äöüß]', '', self.get_cookie("name"))
-                    room.add_player(
-                        Player(re.sub('[^a-zA-Z0-9äöüß]', '', name), "", room.presenter.token))
-                    self.render("game.html",
-                        host=tornado.options.options.as_dict().get('host'))
+                    room.add_player(Player(name, "", room.presenter.token))
+                    self.render("game.html", host=tornado.options.options.as_dict().get('host'))
                     return
 
-                # Check if player just refreshed the page
+                # Check if player just refreshed the page and was not removed beforehand
                 for p in room.players:
                     if p.token == self.get_cookie("token"):
                         self.render("game.html",

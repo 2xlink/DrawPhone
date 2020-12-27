@@ -117,7 +117,7 @@ function show_pregame_player_list() {
             d.appendChild(e)
         }
 
-        if (p[0] == getCookie("name")) {
+        if (p[0] == getCookie("name").replace(/[^a-zA-Z0-9äöüß]/g, '')) {
             e = document.createElement("div")
             e.classList.add("player_list_button", "fa", "fa-pencil", "button_edit")
             e.addEventListener("click", function() {
