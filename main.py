@@ -611,7 +611,10 @@ def get_latest_commits():
         if i >= 6:
             break
 
-    # latest_commits = ["Adds ability to set prompt on first round (Fixes #13)", "Updates words", "Fixes #15"]
+    latest_commits = \
+        ["Forms can now be sent with the return key",
+         "Adds rename and kick functions",
+         "(Hopefully) fixed history sync"]
     logging.debug(f"Got latest commits: {latest_commits}")
 
 
