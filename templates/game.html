@@ -19,12 +19,44 @@
             <input id="timeout_input" class="input input_small" placeholder="[No Timeout]" pattern="[0-9]*">
         </div>
         <div class="minor_text_element">
-            Max. Number of Rounds
-            <input id="rounds_input" class="input input_small" placeholder="0" min="2"
-                   pattern="[0-9]*" onchange="update_rounds_hint()">
-            <div id="div_rounds_hint">
-
-            </div>
+            <p>Task in the first round</p>
+            <table style="margin: auto; text-align: left;">
+    <!--            <col style="width:70%">-->
+    <!--            <col style="width:30%">-->
+                <tbody>
+                    <tr>
+                        <td>
+                            <input type="radio" id="choice_task_draw" name="task_choice" value="draw">
+                        </td>
+                        <td>
+                            <label for="choice_task_draw">Players draw (computer prompts)</label><br>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="radio" id="choice_task_prompt" name="task_choice" value="prompt">
+                        </td>
+                        <td>
+                            <label for="choice_task_prompt">Players think of a prompt</label><br>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="radio" id="choice_task_custom" name="task_choice" value="prompt">
+                        </td>
+                        <td>
+                            <label for="choice_task_custom">
+                                Custom round count:
+                                <input id="rounds_input" class="input_inline" placeholder="0" min="2"
+                                       pattern="[0-9]*" onchange="
+                                       document.getElementById('choice_task_custom').checked = true;
+                                       update_rounds_hint()">
+                                <div id="div_rounds_hint" style="display: none;"></div>
+                            </label>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
         <div class="minor_text_element">
             Wordlist to Use<br>
@@ -37,8 +69,7 @@
             </select>
             <div id="custom_wordlist_div" style="display: none;">
                 <input id="custom_wordlist"
-                       placeholder="Pizza Hawaii, Eiffelturm, Vincent van Gogh, …"
-                >
+                       placeholder="Pizza Hawaii, Eiffelturm, Vincent van Gogh, …">
             </div>
         </div>
         <div class="minor_text_element">

@@ -177,6 +177,10 @@ button:disabled {
     width: 100px;
 }
 
+.input_inline {
+    width: 20px;
+}
+
 body {
     max-width: 500px;
     margin: auto;

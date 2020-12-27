@@ -51,6 +51,9 @@ var button_send_first_prompt = document.getElementById("button_send_first_prompt
 var div_presenter_pregame_waiting = document.getElementById("presenter_pregame_waiting")
 var div_loader = document.getElementById("div_loader")
 var div_rounds_hint = document.getElementById("div_rounds_hint")
+var choice_task_draw = document.getElementById("choice_task_draw")
+var choice_task_prompt = document.getElementById("choice_task_prompt")
+var choice_task_custom = document.getElementById("choice_task_custom")
 
 body = document.body
 body.style.width = vw + "px"
@@ -338,6 +341,7 @@ function setup_client() {
     if (wordlist_chosen == null) {
         wordlist_chosen = "default"
     }
+    chosen_first_task = getCookie("chosen_first_task")
 
     try {
         timeout_input.value = timeout
@@ -346,6 +350,10 @@ function setup_client() {
         wordlist_change(); // Update UI
         custom_wordlist.value = custom_words
         logging_input.checked = allow_history_logging
+
+        choice_task_draw.checked = chosen_first_task == 0
+        choice_task_prompt.checked = chosen_first_task == 1
+        choice_task_custom.checked = chosen_first_task == 2
     }
     catch(err) { }
 
@@ -525,12 +533,29 @@ function startGame() {
     wordlist_chosen = wordlist_dropdown.value
     custom_words = custom_wordlist.value
     allow_history_logging = logging_input.checked
+    if (choice_task_draw.checked) {
+        chosen_first_task = 0
+    }
+    else if (choice_task_prompt.checked) {
+        chosen_first_task = 1
+    }
+    else { // choice_task_custom
+        chosen_first_task = 2
+    }
 
     document.cookie = "timeout=" + timeout
     document.cookie = "round_count=" + round_count
     document.cookie = "wordlist_chosen=" + wordlist_chosen
     document.cookie = "custom_words=" + custom_words
     document.cookie = "allow_history_logging=" + allow_history_logging
+    document.cookie = "chosen_first_task=" + chosen_first_task
+
+    if (chosen_first_task == 1) {
+        round_count = Math.floor((data["players"][1].length - 1) / 2) * 2 + 1
+    }
+    else if (chosen_first_task == 0) {
+        round_count = Math.floor((data["players"][1].length) / 2) * 2
+    }
 
     ret = {
         "token": getCookie("token"),
