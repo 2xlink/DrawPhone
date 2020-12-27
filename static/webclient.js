@@ -100,7 +100,7 @@ function show_pregame_player_list() {
 
         d.innerText = p[0]
 
-        if (is_presenter) {
+        if (is_presenter && p[1] != getCookie("id")) {
             e = document.createElement("div")
             e.classList.add("player_list_button", "fa", "fa-times", "button_kick")
             e.addEventListener("click", function() {
@@ -117,7 +117,7 @@ function show_pregame_player_list() {
             d.appendChild(e)
         }
 
-        if (p[0] == getCookie("name").replace(/[^a-zA-Z0-9äöüß]/g, '')) {
+        if (p[1] == getCookie("id")) {
             e = document.createElement("div")
             e.classList.add("player_list_button", "fa", "fa-pencil", "button_edit")
             e.addEventListener("click", function() {
@@ -127,8 +127,10 @@ function show_pregame_player_list() {
             });
         }
         else {
-            e = document.createElement("div")
-            e.classList.add("player_list_button")
+            if (!is_presenter) {
+                e = document.createElement("div")
+                e.classList.add("player_list_button")
+            }
         }
         d.appendChild(e)
 

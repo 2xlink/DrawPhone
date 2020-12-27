@@ -169,10 +169,12 @@ class MainHandler(tornado.web.RequestHandler):
                 if room.game_state != GameState.PREGAME:
                     return
 
-            room.add_player(Player(name, "", new_token))
+            new_player = Player(name, "", new_token)
+            room.add_player(new_player)
             logging.info(f"Added player {name} with token {new_token}")
 
-            self.set_cookie("token", new_token)
+            self.set_cookie("token", new_player.token)
+            self.set_cookie("id", new_player.id)
             self.render("game.html",
                         host=tornado.options.options.as_dict().get('host'))
 
