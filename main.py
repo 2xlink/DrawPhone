@@ -30,30 +30,23 @@ class GameState(str, Enum):
     POSTGAME = 3
 
 
-class Presenter:
-    def __init__(self, token=str(uuid.uuid4())):
-        self.token = token
-
-    def __repr__(self) -> str:
-        return f"Presenter: Token: {self.token}"
-
-
 class Player:
-    def __init__(self, name, prompt, token=str(uuid.uuid4())):
+    def __init__(self, name, prompt, token=str(uuid.uuid4()), id=str(uuid.uuid4())):
         self.name = name
         self.prompt = prompt
         self.token = token
         self.image = None
         self.is_ready = False
-        self.id = str(uuid.uuid4())
+        self.id = id
 
     def __repr__(self) -> str:
-        return f"Player: Name: {self.name}, Prompt: {self.prompt}, Token: {self.token}, Ready: {self.is_ready}"
+        return f"Player: Name: {self.name}, Prompt: {self.prompt}, Token: {self.token}, " \
+               f"ID: {self.id}, Ready: {self.is_ready}"
 
 
 class Room:
     players: List[Player]
-    presenter: Presenter
+    presenter: Player
     game_state = GameState.PREGAME
     timeout: int
 
@@ -77,7 +70,7 @@ class Room:
     def add_player(self, player: Player):
         self.players += [player]
 
-    def set_presenter(self, presenter: Presenter):
+    def set_presenter(self, presenter: Player):
         self.presenter = presenter
 
     def __repr__(self) -> str:
@@ -130,6 +123,7 @@ class MainHandler(tornado.web.RequestHandler):
         if len(room_id_param) == 1:
             room_id = room_id_param[0]
             new_token = str(uuid.uuid4())
+            new_id = str(uuid.uuid4())
 
             # Check if name is set correctly
             name = self.get_cookie("name")
@@ -144,7 +138,7 @@ class MainHandler(tornado.web.RequestHandler):
             if room_id not in rooms:
                 room = Room()
                 rooms[room_id] = room
-                rooms.get(room_id).set_presenter(Presenter(new_token))
+                rooms.get(room_id).set_presenter(Player("", "", new_token, new_id))
 
             else:
                 room = rooms.get(room_id)
@@ -154,7 +148,7 @@ class MainHandler(tornado.web.RequestHandler):
                 if room.presenter.token == self.get_cookie("token") and \
                         room.game_state is GameState.PREGAME:
                     # Add the presenter as a player again
-                    room.add_player(Player(name, "", room.presenter.token))
+                    room.add_player(Player(name, "", room.presenter.token, room.presenter.id))
                     self.render("game.html", host=tornado.options.options.as_dict().get('host'))
                     return
 
@@ -169,9 +163,9 @@ class MainHandler(tornado.web.RequestHandler):
                 if room.game_state != GameState.PREGAME:
                     return
 
-            new_player = Player(name, "", new_token)
+            new_player = Player(name, "", new_token, new_id)
             room.add_player(new_player)
-            logging.info(f"Added player {name} with token {new_token}")
+            logging.info(f"Added player {new_player}")
 
             self.set_cookie("token", new_player.token)
             self.set_cookie("id", new_player.id)

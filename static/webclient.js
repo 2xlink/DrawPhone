@@ -351,6 +351,7 @@ function setup_client() {
         custom_wordlist.value = custom_words
         logging_input.checked = allow_history_logging
 
+        if (chosen_first_task == null) chosen_first_task = 2
         choice_task_draw.checked = chosen_first_task == 0
         choice_task_prompt.checked = chosen_first_task == 1
         choice_task_custom.checked = chosen_first_task == 2
