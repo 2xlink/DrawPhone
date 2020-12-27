@@ -16,12 +16,18 @@
             document.cookie = "name=" + document.getElementById("input_name").value
             location.reload()
         }
+
+        function checkSubmit(e) {
+            if(e && e.keyCode == 13) {
+              setName()
+            }
+        }
     </script>
 
     <div class="text_element">
         Enter your name
     </div>
-    <input class="input" id="input_name">
+    <input class="input" id="input_name" onkeyup="checkSubmit(event)">
     <button class="button button_send" onclick='setName()'>Send</button>
 </body>
 

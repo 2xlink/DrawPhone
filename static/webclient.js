@@ -406,6 +406,12 @@ function sendPrompt() {
     button_send_prompt.disabled = true
 }
 
+function checkSubmit(e, fun) {
+    if(e && e.keyCode == 13) {
+        fun()
+    }
+}
+
 function sendFirstPrompt(chose_computer_supplied) {
     is_busy = false
     if (chose_computer_supplied) {

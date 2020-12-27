@@ -133,7 +133,8 @@
     <div></div>
     <div>
         <input class="input" id="prompt_input"
-               onclick="document.getElementById('button_send_prompt').disabled = false">
+               onclick="document.getElementById('button_send_prompt').disabled = false"
+               onkeyup="checkSubmit(event, sendPrompt)">
     </div>
     <button id="button_send_prompt" class="button button_send"
             disabled onclick=sendPrompt()>Send</button>
@@ -142,11 +143,12 @@
 <div id="div_submit_first_prompt" style="display: none">
     <p class="text_element">What should the next player draw?</p>
     <input class="input" id="input_first_prompt"
-        onclick="document.getElementById('button_send_first_prompt').disabled = false">
+           onclick="document.getElementById('button_send_first_prompt').disabled = false"
+           onkeyup="checkSubmit(event, sendFirstPrompt)">
     <button id="button_send_first_prompt" class="button button_send"
             disabled onclick='sendFirstPrompt(false)'>Send</button>
-    <button class="button button_send"
-        onclick='sendFirstPrompt(true)'>Let the computer choose for me</button>
+    <button class="minor_button button_send"
+            onclick='sendFirstPrompt(true)'>Let the computer choose for me</button>
 </div>
 
 <div id="div_loader" class="loader" style="display: none;"></div>
