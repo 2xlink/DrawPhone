@@ -64,6 +64,19 @@ body{
     margin-bottom: 20px;
 }
 
+.kick_button {
+    border: none;
+    color: var(--button-warning);
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    width: 20px;
+    height: 20px;
+    float: right;
+    cursor: pointer;
+}
+
 .title {
     text-align: center;
     margin: 10px;

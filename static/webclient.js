@@ -13,6 +13,7 @@ var timeout_function
 var timeout_has_started = false
 var body
 var is_busy = false // Set when the player needs to do something before showing other stuff
+var is_presenter = false
 
 var div_presenter_pre_game = document.getElementById("div_presenter_pre_game")
 var div_presenter_settings = document.getElementById("div_presenter_settings")
@@ -76,14 +77,14 @@ function show_player_list() {
     data["players"][0].forEach(p => {
         d = document.createElement("div")
         d.classList.add("player", "minor_text_element")
-        d.innerText = p
+        d.innerText = p[0]
         div_presenter_playing_player_list_ready.appendChild(d)
     })
 
     data["players"][1].forEach(p => {
         d = document.createElement("div")
         d.classList.add("player", "minor_text_element")
-        d.innerText = p
+        d.innerText = p[0]
         div_presenter_playing_player_list_not_ready.appendChild(d)
     })
 
@@ -96,7 +97,26 @@ function show_pregame_player_list() {
     data["players"][1].forEach(p => {
         d = document.createElement("div")
         d.classList.add("player", "text_element")
-        d.innerText = p
+
+        d.innerText = p[0]
+
+        if (is_presenter) {
+            e = document.createElement("div")
+            e.classList.add("kick_button", "fa", "fa-times")
+            e.addEventListener("click", function() {
+                console.log("Kick player " + p)
+                ret = {
+                    "token": getCookie("token"),
+                    "room_id": findGetParameter("room_id"),
+                    "command": "kick_player",
+                    "id": p[1]
+                }
+                ws.send(JSON.stringify(ret))
+            });
+
+            d.appendChild(e)
+        }
+
         div_presenter_pre_game_player_list.appendChild(d)
     })
 
@@ -124,7 +144,7 @@ function update_rounds_hint() {
 }
 
 ws.onmessage = function (evt) {
-//    console.log(evt.data);
+    console.log(evt.data);
     data = JSON.parse(evt.data)
     command = data["command"]
 
@@ -134,6 +154,7 @@ ws.onmessage = function (evt) {
         div_presenter_settings.style.display = "block"
         start_button.style.display = "initial"
         presenter_pregame_waiting.style.display = "none"
+        is_presenter = true
         show_pregame_player_list()
     }
     else if (command == "show_pregame") {
@@ -181,6 +202,10 @@ ws.onmessage = function (evt) {
 //        if (data["command"] == "reload") {
 //            setTimeout(_ => location.reload(), 2000)
 //        }
+    }
+
+    else if (command = "kicked") {
+        location = "/"
     }
 
     // game update

@@ -6,17 +6,16 @@ import re
 import datetime
 import os
 import json
-
+import os.path
+import uuid
 import logging
+
 import tornado.escape
 import tornado.ioloop
 import tornado.options
 import tornado.web
 import tornado.websocket
 import tornado.httpclient as httpclient
-import os.path
-import uuid
-
 from tornado.options import define, options
 
 define("host", default="drawphone.kumula.me", help="run on the given host", type=str)
@@ -45,6 +44,7 @@ class Player:
         self.token = token
         self.image = None
         self.is_ready = False
+        self.id = str(uuid.uuid4())
 
     def __repr__(self) -> str:
         return f"Player: Name: {self.name}, Prompt: {self.prompt}, Token: {self.token}, Ready: {self.is_ready}"
@@ -111,7 +111,6 @@ class MainHandler(tornado.web.RequestHandler):
 
     def get(self):
         room_id_param = self.get_arguments("room_id")
-        logging.info(f"main GET, rooms are {rooms}")
 
         # Delete rooms which were not accessed in the last 20 minutes
         rooms_to_delete = []
@@ -175,9 +174,6 @@ class MainHandler(tornado.web.RequestHandler):
             self.render("game.html",
                         host=tornado.options.options.as_dict().get('host'))
 
-            # Update Presenter UI
-            update_game_status(room, {"command": "show_pregame"})
-
         # Else just show intro page
         else:
             self.render("index.html", existing_rooms=[r for r in rooms],
@@ -185,7 +181,7 @@ class MainHandler(tornado.web.RequestHandler):
                         commits="!!DELIM!!".join(latest_commits))
 
 
-def update_game_status(room: Room, extra_obj=None):
+def update_game_status(room: Room, extra_obj=None, token=""):
     if extra_obj is None:
         extra_obj = {}
 
@@ -194,8 +190,8 @@ def update_game_status(room: Room, extra_obj=None):
         "command": "general_update",
         "game_state": room.game_state,
         "players": [
-            [p.name for p in room.players if p.is_ready],
-            [p.name for p in room.players if not p.is_ready]
+            [[p.name, p.id] for p in room.players if p.is_ready],
+            [[p.name, p.id] for p in room.players if not p.is_ready]
         ],
         "round_count": room.round_count,
         "max_rounds": room.max_rounds,
@@ -203,8 +199,11 @@ def update_game_status(room: Room, extra_obj=None):
     }
     message = {**message, **extra_obj}
 
-    for p in room.players:
-        WebSocketHandler.send_updates(p.token, message)
+    if token == "":
+        for p in room.players:
+            WebSocketHandler.send_updates(p.token, message)
+    else:
+        WebSocketHandler.send_updates(token, message)
 
 
 def update_current_task(room: Room, token: str, extra_obj=None):
@@ -263,9 +262,19 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         if room.presenter.token == parsed["token"] and room.game_state is GameState.PREGAME:
             if parsed["command"] == "reconnect_check":
                 message = {"command": "show_settings"}
-                update_game_status(room, message)
+                update_game_status(room, message, room.presenter.token)
 
-            if parsed["command"] == "start_game":
+            elif parsed["command"] == "kick_player":
+                for p in room.players:
+                    if p.id == parsed["id"]:
+                        logging.info(f"Removing player {p}")
+                        room.players.remove(p)
+                        update_game_status(room, {"command": "kicked"}, p.token)
+
+                message = {"command": "show_settings"}
+                update_game_status(room, message, room.presenter.token)
+
+            elif parsed["command"] == "start_game":
                 # Shuffle players
                 random.shuffle(room.players)
 
