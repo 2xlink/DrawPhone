@@ -188,8 +188,8 @@ def update_game_status(room: Room, extra_obj=None, token=""):
         "command": "general_update",
         "game_state": room.game_state,
         "players": [
-            [[p.name, p.id] for p in room.players if p.is_ready],
-            [[p.name, p.id] for p in room.players if not p.is_ready]
+            random.shuffle([[p.name, p.id] for p in room.players if p.is_ready]),
+            random.shuffle([[p.name, p.id] for p in room.players if not p.is_ready])
         ],
         "round_count": room.round_count,
         "max_rounds": room.max_rounds,
