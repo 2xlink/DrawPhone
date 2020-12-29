@@ -588,36 +588,39 @@ def main():
 def get_latest_commits():
     global latest_commits
 
-    http_client = httpclient.HTTPClient()
-    try:
-        response = http_client.fetch("https://api.github.com/repos/2xlink/DrawPhone/events")
-        parsed = json.loads(response.body)
-    except Exception as e:
-        # Other errors are possible, such as IOError.
-        logging.warning("Error: " + str(e))
-        parsed = []
-
-    http_client.close()
-
-    i = 0
-    for event in parsed:
-        if event["type"] != "PushEvent":
-            continue
-
-        commits = event["payload"]["commits"]
-        commits.reverse()
-
-        for c in commits:
-            latest_commits.append(c["message"])
-            i += 1
-
-        if i >= 6:
-            break
+    # http_client = httpclient.HTTPClient()
+    # try:
+    #     response = http_client.fetch("https://api.github.com/repos/2xlink/DrawPhone/events")
+    #     parsed = json.loads(response.body)
+    # except Exception as e:
+    #     # Other errors are possible, such as IOError.
+    #     logging.warning("Error: " + str(e))
+    #     parsed = []
+    #
+    # http_client.close()
+    #
+    # i = 0
+    # for event in parsed:
+    #     if event["type"] != "PushEvent":
+    #         continue
+    #
+    #     commits = event["payload"]["commits"]
+    #     commits.reverse()
+    #
+    #     for c in commits:
+    #         latest_commits.append(c["message"])
+    #         i += 1
+    #
+    #     if i >= 6:
+    #         break
 
     latest_commits = \
-        ["Forms can now be sent with the return key",
-         "Adds rename and kick functions",
-         "(Hopefully) fixed history sync"]
+        [
+            "Adds a like button to the history. Liked prompts may be included in the future."
+            "Forms can now be sent with the return key",
+            "Added rename and kick functions.",
+            "(Hopefully) fixed history sync."
+        ]
     logging.debug(f"Got latest commits: {latest_commits}")
 
 
