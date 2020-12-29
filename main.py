@@ -184,15 +184,18 @@ def update_game_status(room: Room, extra_obj=None, token=""):
         extra_obj = {}
 
     players_ready = [[p.name, p.id] for p in room.players if p.is_ready]
-    players_unready = [[p.name, p.id] for p in room.players if p.is_ready]
+    players_unready = [[p.name, p.id] for p in room.players if not p.is_ready]
     random.shuffle(players_ready)
     random.shuffle(players_unready)
+    logging.warning(players_ready)
 
     message = {
         "type": "presenter",
         "command": "general_update",
         "game_state": room.game_state,
-        "players": [players_ready, players_unready],
+        "players": [
+            players_ready, players_unready
+        ],
         "round_count": room.round_count,
         "max_rounds": room.max_rounds,
         "timeout": room.timeout
