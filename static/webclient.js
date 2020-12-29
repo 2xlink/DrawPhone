@@ -105,7 +105,7 @@ function show_pregame_player_list() {
 
         if (is_presenter && p[1] != getCookie("id")) {
             e = document.createElement("div")
-            e.classList.add("player_list_button", "fa", "fa-times", "button_kick")
+            e.classList.add("fa", "fa-times", "list_button", "button_kick")
             e.addEventListener("click", function() {
                 console.log("Kick player " + p)
                 ret = {
@@ -122,7 +122,7 @@ function show_pregame_player_list() {
 
         if (p[1] == getCookie("id")) {
             e = document.createElement("div")
-            e.classList.add("player_list_button", "fa", "fa-pencil", "button_edit")
+            e.classList.add("fas", "fa-pen", "list_button", "button_edit")
             e.addEventListener("click", function() {
                 console.log("Rename player " + p)
                 deleteCookie("name")
@@ -132,7 +132,7 @@ function show_pregame_player_list() {
         else {
             if (!is_presenter) {
                 e = document.createElement("div")
-                e.classList.add("player_list_button")
+                e.classList.add("list_button")
             }
         }
         d.appendChild(e)
@@ -470,6 +470,29 @@ show_histories = async function(histories) {
                 e = document.createElement("div")
                 e.innerText = player_name + ': "' + event + '"'
                 e.classList.add("fade_in", "minor_text_element")
+
+                event_tmp = event
+                f = document.createElement("div");
+                f.classList.add("far", "fa-heart", "list_button", "button_like");
+                (function(prompt, elem) {
+                    f.onclick = function() {
+                        console.log("Like prompt " + prompt)
+                        elem.classList.remove("far")
+                        elem.classList.add("fas")
+                        elem.style.color = "red"
+                        elem.onclick = function() {}
+
+                        ret = {
+                            "token": getCookie("token"),
+                            "room_id": findGetParameter("room_id"),
+                            "command": "like_prompt",
+                            "prompt": prompt
+                        }
+                        ws.send(JSON.stringify(ret))
+                    }
+                })(event, f);
+                e.appendChild(f)
+
                 div_history.appendChild(e)
                 e.scrollIntoView({ behavior: 'smooth' })
             }

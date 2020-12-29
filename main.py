@@ -543,6 +543,9 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                 logging.info(f"Reloading game with room_id {parsed['room_id']}")
                 del rooms[parsed["room_id"]]
 
+            elif parsed["command"] == "like_prompt":
+                save_liked_prompt(player.token, parsed["prompt"])
+
 
 class PrivacyHandler(tornado.web.RequestHandler):
     def get(self):
@@ -564,6 +567,12 @@ def dump_histories_to_file(histories):
                str(datetime.datetime.now()).replace(" ", "_").replace(":", "-") + ".txt"
     with open(filename, "x") as f:
         f.write(json.dumps(histories))
+
+
+def save_liked_prompt(token, prompt):
+    filename = "liked_prompts.csv"
+    with open(filename, "a") as f:
+        f.write(token + ";" + prompt + "\n")
 
 
 def main():

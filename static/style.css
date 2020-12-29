@@ -5,6 +5,7 @@
     --minor-text-element: #f4f7c5;
     --font-light: #FFFFFF;
     --font-dark: #000000;
+    --font-gray: gray;
     --button: #da806a;
     --minor-button: #a0a47a;
     --button-hover: #ea907a;
@@ -64,12 +65,12 @@ body{
     margin-bottom: 20px;
 }
 
-.player_list_button {
+.list_button {
     border: none;
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 14px;
+    font-size: 16px;
     width: 20px;
     height: 20px;
     float: right;
@@ -82,6 +83,10 @@ body{
 
 .button_edit {
     color: var(--font-dark);
+}
+
+.button_like {
+    color: var(--font-gray);
 }
 
 .title {
