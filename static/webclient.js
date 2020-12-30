@@ -445,7 +445,8 @@ function sendFirstPrompt(chose_computer_supplied) {
     input_first_prompt.value = ""
 }
 
-function change_stroke_color(element, color) {
+function change_stroke_color(element) {
+    const color = element.dataset.color;
     const colorButtons = document.getElementsByClassName("color_button");
 
     Array.from(colorButtons).forEach(colorButton => {
