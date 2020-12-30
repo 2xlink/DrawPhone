@@ -197,12 +197,6 @@
     var hostname = "{{ host }}"
 </script>
 <script src="{{ static_url('webclient.js') }}" type="text/javascript"></script>
-<script type="text/javascript">
-    window.onload = () => {
-        const room_id = findGetParameter("room_id");
-        document.getElementById("room_id").innerHTML = room_id;
-    };
-</script>
 
 <!-- Matomo -->
 <script type="text/javascript">

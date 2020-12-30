@@ -56,6 +56,7 @@ var choice_task_prompt = document.getElementById("choice_task_prompt")
 var choice_task_custom = document.getElementById("choice_task_custom")
 var color_buttons = document.querySelectorAll(".color_button[data-color]")
 var stroke_size_buttons = document.querySelectorAll(".color_button[data-stroke-size]")
+var div_room_id = document.getElementById("room_id")
 
 body = document.body
 body.style.width = vw + "px"
@@ -68,6 +69,10 @@ if (window.location.protocol == "https:") {
 }
 
 var timeout_started = false
+
+window.onload = () => {
+    div_room_id.innerText = findGetParameter("room_id");
+};
 
 ws.onopen = function() {
     ret = {
