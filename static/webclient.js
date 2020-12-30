@@ -461,11 +461,7 @@ function sendFirstPrompt(chose_computer_supplied) {
 function change_stroke_color(element) {
     const color = element.dataset.color;
 
-    Array.from(color_buttons).forEach(colorButton => {
-        colorButton.classList.remove("focus");
-    })
-
-    element.classList.add("focus");
+    update_button_focus(element, color_buttons);
 
     sketchpad1.color = '#' + color
 }
@@ -473,13 +469,17 @@ function change_stroke_color(element) {
 function change_stroke_size(element) {
     const size = element.dataset.strokeSize;
 
-    Array.from(stroke_size_buttons).forEach(colorButton => {
-        colorButton.classList.remove("focus");
+    update_button_focus(element, stroke_size_buttons);
+
+    sketchpad1.penSize = size
+}
+
+function update_button_focus(element, siblings) {
+    Array.from(siblings).forEach(sibling => {
+        sibling.classList.remove("focus");
     })
 
     element.classList.add("focus");
-
-    sketchpad1.penSize = size
 }
 
 show_histories = async function(histories) {
