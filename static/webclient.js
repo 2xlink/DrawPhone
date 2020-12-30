@@ -445,7 +445,15 @@ function sendFirstPrompt(chose_computer_supplied) {
     input_first_prompt.value = ""
 }
 
-function change_stroke_color(color) {
+function change_stroke_color(element, color) {
+    const colorButtons = document.getElementsByClassName("color_button");
+
+    Array.from(colorButtons).forEach(colorButton => {
+        colorButton.classList.remove("focus");
+    })
+
+    element.classList.add("focus");
+
     sketchpad1.color = '#' + color
 }
 

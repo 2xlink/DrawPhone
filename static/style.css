@@ -49,6 +49,10 @@ body{
     color: var(--font-dark);
 }
 
+.color_button.focus {
+    box-shadow: 0 0 0 4px var(--text-element);
+}
+
 .size_button {
     border: none;
     color: var(--font-light);
