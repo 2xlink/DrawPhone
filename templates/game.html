@@ -74,6 +74,18 @@
         </div>
         <div class="minor_text_element">
             <table style="margin: auto;">
+                <tbody>
+                    <tr>
+                        <td>Room ID</td>
+                    </tr>
+                    <tr>
+                        <td id="room_id"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="minor_text_element">
+            <table style="margin: auto;">
     <!--            <col style="width:70%">-->
     <!--            <col style="width:30%">-->
                 <tbody>
@@ -194,6 +206,12 @@
     var hostname = "{{ host }}"
 </script>
 <script src="{{ static_url('webclient.js') }}" type="text/javascript"></script>
+<script type="text/javascript">
+    window.onload = () => {
+        const room_id = findGetParameter("room_id");
+        document.getElementById("room_id").innerHTML = room_id;
+    };
+</script>
 
 <!-- Matomo -->
 <script type="text/javascript">
