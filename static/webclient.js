@@ -54,6 +54,8 @@ var div_rounds_hint = document.getElementById("div_rounds_hint")
 var choice_task_draw = document.getElementById("choice_task_draw")
 var choice_task_prompt = document.getElementById("choice_task_prompt")
 var choice_task_custom = document.getElementById("choice_task_custom")
+var color_buttons = document.querySelectorAll(".color_button[data-color]")
+var stroke_size_buttons = document.querySelectorAll(".color_button[data-stroke-size]")
 
 body = document.body
 body.style.width = vw + "px"
@@ -363,6 +365,17 @@ function setup_client() {
       width: vw,
       height: vw
     });
+
+    Array.from(color_buttons).forEach(colorButton => {
+        const color = colorButton.dataset.color;
+        colorButton.style.backgroundColor = "#" + color;
+    });
+
+    const initialColorButton = document.querySelector(".color_button[data-color='" + sketchpad1.color.substring(1) + "']");
+    const initialStrokeSizeButton = document.querySelector(".color_button[data-stroke-size='" + sketchpad1.penSize + "']");
+
+    initialColorButton.classList.add("focus");
+    initialStrokeSizeButton.classList.add("focus");
 }
 
 function sendImage() {
@@ -445,12 +458,28 @@ function sendFirstPrompt(chose_computer_supplied) {
     input_first_prompt.value = ""
 }
 
-function change_stroke_color(color) {
+function change_stroke_color(element) {
+    const color = element.dataset.color;
+
+    update_button_focus(element, color_buttons);
+
     sketchpad1.color = '#' + color
 }
 
-function change_stroke_size(size) {
+function change_stroke_size(element) {
+    const size = element.dataset.strokeSize;
+
+    update_button_focus(element, stroke_size_buttons);
+
     sketchpad1.penSize = size
+}
+
+function update_button_focus(element, siblings) {
+    Array.from(siblings).forEach(sibling => {
+        sibling.classList.remove("focus");
+    })
+
+    element.classList.add("focus");
 }
 
 show_histories = async function(histories) {

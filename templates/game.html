@@ -141,23 +141,23 @@
         <canvas class="sketchpad" id="sketchpad_input"></canvas>
     </div>
     <div class="draw_tools">
-        <button class="color_button" onclick="change_stroke_color('4CAF50')" style="background-color: #4CAF50;"></button>
-        <button class="color_button" onclick="change_stroke_color('CCFF00')" style="background-color: #CCFF00;"></button>
-<!--        <button class="color_button" onclick="change_stroke_color('33FFFF')" style="background-color: #33FFFF;"></button>-->
-        <button class="color_button" onclick="change_stroke_color('008CBA')" style="background-color: #008CBA;"></button>
-        <button class="color_button" onclick="change_stroke_color('f44336')" style="background-color: #f44336;"></button>
-        <button class="color_button" onclick="change_stroke_color('FFCC00')" style="background-color: #FFCC00;"></button>
-        <button class="color_button" onclick="change_stroke_color('FFFF33')" style="background-color: #FFFF33;"></button>
-        <button class="color_button" onclick="change_stroke_color('5B3A29')" style="background-color: #5B3A29;"></button>
-        <button class="color_button" onclick="change_stroke_color('000000')" style="background-color: #000000;"></button>
-        <button class="color_button" onclick="change_stroke_color('FFFFFF')" style="background-color: #FFFFFF;"></button>
-        <button class="color_button" onclick="change_stroke_size(5)">
+        <button class="color_button" data-color="4CAF50" onclick="change_stroke_color(this)"></button>
+        <button class="color_button" data-color="CCFF00" onclick="change_stroke_color(this)"></button>
+<!--        <button class="color_button" data-color="33FFFF" onclick="change_stroke_color(this)"></button>-->
+        <button class="color_button" data-color="008CBA" onclick="change_stroke_color(this)"></button>
+        <button class="color_button" data-color="f44336" onclick="change_stroke_color(this)"></button>
+        <button class="color_button" data-color="FFCC00" onclick="change_stroke_color(this)"></button>
+        <button class="color_button" data-color="FFFF33" onclick="change_stroke_color(this)"></button>
+        <button class="color_button" data-color="5B3A29" onclick="change_stroke_color(this)"></button>
+        <button class="color_button" data-color="000000" onclick="change_stroke_color(this)"></button>
+        <button class="color_button" data-color="FFFFFF" onclick="change_stroke_color(this)"></button>
+        <button class="color_button" data-stroke-size="5" onclick="change_stroke_size(this)">
             <img src="{{ static_url('img/2.png') }}"/>
         </button>
-        <button class="color_button" onclick="change_stroke_size(10)">
+        <button class="color_button" data-stroke-size="10" onclick="change_stroke_size(this)">
             <img src="{{ static_url('img/1.png') }}"/>
         </button>
-        <button class="color_button" onclick="change_stroke_size(20)">
+        <button class="color_button" data-stroke-size="20" onclick="change_stroke_size(this)">
             <img src="{{ static_url('img/0.png') }}"/>
         </button>
         <button class="color_button" onclick="sketchpad1.undo()">
