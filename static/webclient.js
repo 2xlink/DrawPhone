@@ -54,6 +54,7 @@ var div_rounds_hint = document.getElementById("div_rounds_hint")
 var choice_task_draw = document.getElementById("choice_task_draw")
 var choice_task_prompt = document.getElementById("choice_task_prompt")
 var choice_task_custom = document.getElementById("choice_task_custom")
+var color_buttons = document.querySelectorAll(".color_button[data-color]")
 
 body = document.body
 body.style.width = vw + "px"
@@ -364,11 +365,9 @@ function setup_client() {
       height: vw
     });
 
-    Array.from(document.getElementsByClassName("color_button")).forEach(colorButton => {
+    Array.from(color_buttons).forEach(colorButton => {
         const color = colorButton.dataset.color;
-        if (color) {
-            colorButton.style.backgroundColor = "#" + color;
-        }
+        colorButton.style.backgroundColor = "#" + color;
     });
 }
 
@@ -454,9 +453,8 @@ function sendFirstPrompt(chose_computer_supplied) {
 
 function change_stroke_color(element) {
     const color = element.dataset.color;
-    const colorButtons = document.getElementsByClassName("color_button");
 
-    Array.from(colorButtons).forEach(colorButton => {
+    Array.from(color_buttons).forEach(colorButton => {
         colorButton.classList.remove("focus");
     })
 
