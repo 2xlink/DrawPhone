@@ -370,6 +370,12 @@ function setup_client() {
         const color = colorButton.dataset.color;
         colorButton.style.backgroundColor = "#" + color;
     });
+
+    const initialColorButton = document.querySelector(".color_button[data-color='" + sketchpad1.color.substring(1) + "']");
+    const initialStrokeSizeButton = document.querySelector(".color_button[data-stroke-size='" + sketchpad1.penSize + "']");
+
+    initialColorButton.classList.add("focus");
+    initialStrokeSizeButton.classList.add("focus");
 }
 
 function sendImage() {
