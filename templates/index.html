@@ -25,11 +25,6 @@
             }
         }
     }
-
-    function join_game() {
-        const code = document.getElementById("room_id").value;
-        window.location = "/?room_id=" + code;
-    }
 </script>
 
 <div id="root">
@@ -38,21 +33,23 @@
         <button class="center_buttons" onclick="create_game()">Create a Room</button>
     </div>
     <div class="text_element">
-        <table style="margin: auto;">
-            <tbody>
-                <tr>
-                    <td>Enter a room ID to join an existing game.</td>
-                </tr>
-                <tr>
-                    <td>
-                        <input id="room_id" class="input input_small" pattern="[0-9]+" placeholder="Room ID"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td><button class="center_buttons" onclick="join_game()">Join Room</button></td>
-                </tr>
-            </tbody>
-        </table>
+        <form method="GET">
+            <table style="margin: auto;">
+                <tbody>
+                    <tr>
+                        <td>Enter a room ID to join an existing game.</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input name="room_id" class="input input_small" pattern="[0-9]+" placeholder="Room ID"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><button class="center_buttons" type="submit">Join Room</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
     </div>
     <div class="text_element">To join a room, use the link from someone with a room.</div>
     <div id="commits_div" class="minor_text_element" style="display: none;">
