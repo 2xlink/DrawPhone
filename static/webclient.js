@@ -463,7 +463,9 @@ function change_stroke_color(element) {
     sketchpad1.color = '#' + color
 }
 
-function change_stroke_size(size) {
+function change_stroke_size(element) {
+    const size = element.dataset.strokeSize;
+
     sketchpad1.penSize = size
 }
 
