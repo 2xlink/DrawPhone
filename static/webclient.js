@@ -55,6 +55,7 @@ var choice_task_draw = document.getElementById("choice_task_draw")
 var choice_task_prompt = document.getElementById("choice_task_prompt")
 var choice_task_custom = document.getElementById("choice_task_custom")
 var color_buttons = document.querySelectorAll(".color_button[data-color]")
+var stroke_size_buttons = document.querySelectorAll(".color_button[data-stroke-size]")
 
 body = document.body
 body.style.width = vw + "px"
@@ -465,6 +466,12 @@ function change_stroke_color(element) {
 
 function change_stroke_size(element) {
     const size = element.dataset.strokeSize;
+
+    Array.from(stroke_size_buttons).forEach(colorButton => {
+        colorButton.classList.remove("focus");
+    })
+
+    element.classList.add("focus");
 
     sketchpad1.penSize = size
 }
