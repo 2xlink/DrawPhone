@@ -363,6 +363,13 @@ function setup_client() {
       width: vw,
       height: vw
     });
+
+    Array.from(document.getElementsByClassName("color_button")).forEach(colorButton => {
+        const color = colorButton.dataset.color;
+        if (color) {
+            colorButton.style.backgroundColor = "#" + color;
+        }
+    });
 }
 
 function sendImage() {
