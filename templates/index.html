@@ -29,29 +29,19 @@
 
 <div id="root">
     <div class="title">Drawphone</div>
-    <div class="text_element">To create a room, use this button.
+    <div class="text_element">
+        <p>To create a room, use this button.</p>
         <button class="center_buttons" onclick="create_game()">Create a Room</button>
     </div>
     <div class="text_element">
         <form method="GET">
-            <table style="margin: auto;">
-                <tbody>
-                    <tr>
-                        <td>Enter a room ID to join an existing game.</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <input name="room_id" class="input input_small" pattern="[0-9]+" placeholder="Room ID"/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><button class="center_buttons" type="submit">Join Room</button></td>
-                    </tr>
-                </tbody>
-            </table>
+            <p>Enter a room ID to join an existing game.</p>
+            <div class="center_buttons">
+                <input name="room_id" class="input input_small" placeholder="Room ID" required/>
+                <button class="center_buttons" type="submit">Join Room</button>
+            </div>
         </form>
     </div>
-    <div class="text_element">To join a room, use the link from someone with a room.</div>
     <div id="commits_div" class="minor_text_element" style="display: none;">
         <p style="text-decoration: underline;">Latest Updates</p>
         <div id="commits_list_div"></div>

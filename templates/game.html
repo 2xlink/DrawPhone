@@ -15,7 +15,7 @@
     <div id="div_presenter_pre_game_player_list"></div>
     <div id="div_presenter_settings" style="display: none;">
         <div class="minor_text_element">
-            Timeout (in Seconds)
+            <p>Timeout (in Seconds)</p>
             <input id="timeout_input" class="input input_small" placeholder="[No Timeout]" pattern="[0-9]*">
         </div>
         <div class="minor_text_element">
@@ -59,7 +59,7 @@
             </table>
         </div>
         <div class="minor_text_element">
-            Wordlist to Use<br>
+            <p>Wordlist to Use</p>
             <select id="wordlist_dropdown" class="input" name="wordlist_dropdown"
                     onchange="wordlist_change()">
                 <option value="default">Simple Words (German)</option>
@@ -73,16 +73,7 @@
             </div>
         </div>
         <div class="minor_text_element">
-            <table style="margin: auto;">
-                <tbody>
-                    <tr>
-                        <td>Room ID</td>
-                    </tr>
-                    <tr>
-                        <td id="room_id"></td>
-                    </tr>
-                </tbody>
-            </table>
+            Room ID: <b id="room_id"></b>
         </div>
         <div class="minor_text_element">
             <table style="margin: auto;">
@@ -106,7 +97,7 @@
     </div>
     <div class="center_buttons">
         <button id="copy_room" class="minor_button" onclick="copy_room_to_clipboard()">
-            Copy Room ID
+            Copy Room Link
         </button>
         <button id="start_button" class="button" disabled onclick="startGame()"
             style="display: none;">Start Game</button></p>

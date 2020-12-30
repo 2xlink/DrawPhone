@@ -17,8 +17,13 @@
     --border-radius: 5px;
   }
 
-body{
+body {
     background-color: var(--background);
+}
+
+p {
+    margin-top: 8px;
+    margin-bottom: 8px;
 }
 
 .sketchpad {
