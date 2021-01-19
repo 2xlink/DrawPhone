@@ -296,24 +296,12 @@ ws.onmessage = function (evt) {
         }
         else if ("image" in data) {
             div_prompt.style.display = "unset"
-            settings = data["image"]
-            settings.element = sketchpad_supplied
-            supplied_vw = settings.width
-            scale_factor = vw / supplied_vw
-
-            // Scale drawn thing to our vw
-            settings.strokes.forEach(stroke => {
-                stroke.lines.forEach(line => {
-                    line.start.x = scale_factor * line.start.x
-                    line.start.y = scale_factor * line.start.y
-                    line.end.x = scale_factor * line.end.x
-                    line.end.y = scale_factor * line.end.y
-                })
-            })
-
-            settings.width = vw
-            settings.height = vw
-            sketchpad2 = new Sketchpad(settings)
+            png_data = data["image"]
+            sketchpad_supplied.setAttribute(
+                'src', png_data
+            );
+            sketchpad_supplied.width = vw
+            sketchpad_supplied.height = vw
 
             if (timeout != 0) {
                 console.log("Setting prompt timeout to " + timeout)
@@ -388,8 +376,7 @@ function sendImage() {
     ret = {
         "token": getCookie("token"),
         "room_id": findGetParameter("room_id"),
-        "image": sketchpad1.toObject()
-//        "image": sketchpad_input.toDataURL()
+        "image": sketchpad1.canvas.toDataURL()
     }
     ws.send(JSON.stringify(ret))
 
@@ -500,7 +487,7 @@ show_histories = async function(histories) {
             player_name = event_tuple[0]
             event = event_tuple[1]
 
-            if (typeof event === "string") {
+            if (!event.startsWith("data:image")) {
                 e = document.createElement("div")
                 e.innerText = player_name + ': "' + event + '"'
                 e.classList.add("fade_in", "minor_text_element")
@@ -534,7 +521,7 @@ show_histories = async function(histories) {
                 d = document.createElement("div")
                 d.innerText = player_name + " drew the following"
 
-                e = document.createElement("canvas")
+                e = document.createElement("img")
                 e.classList.add("sketchpad")
                 e.classList.add("sketchpad_nopointer")
 
@@ -543,25 +530,11 @@ show_histories = async function(histories) {
                 div_history.appendChild(d)
                 div_history.appendChild(e)
 
-                settings = event
-                settings.element = e
-                supplied_vw = settings.width
-                scale_factor = vw / supplied_vw
-
-                // Scale drawn thing to our vw
-                settings.strokes.forEach(stroke => {
-                    stroke.lines.forEach(line => {
-                        line.start.x = scale_factor * line.start.x
-                        line.start.y = scale_factor * line.start.y
-                        line.end.x = scale_factor * line.end.x
-                        line.end.y = scale_factor * line.end.y
-                    })
-                })
-
-                settings.width = vw
-                settings.height = vw
-                var sketchpad = new Sketchpad(settings)
-//                sketchpad.animate(1)
+                e.setAttribute(
+                    'src', event
+                );
+                e.width = vw
+                e.height = vw
 
                 e.scrollIntoView({ behavior: 'smooth' })
 
