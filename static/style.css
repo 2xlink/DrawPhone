@@ -1,17 +1,21 @@
 :root {
     /* colors */
     --background: #FFFFFF;
+
+    --title: #ea907a;
     --text-element: #fbc687;
     --minor-text-element: #f4f7c5;
+
     --font-light: #FFFFFF;
     --font-dark: #000000;
     --font-gray: gray;
+
     --button: #da806a;
     --minor-button: #a0a47a;
-    --button-hover: #ea907a;
+    /* --button-hover: #ea907a; */
     --button-warning: #f92b20;
+    
     --borders: #666666;
-    --title: #ea907a;
 
     /* size parameters */
     --border-radius: 5px;
