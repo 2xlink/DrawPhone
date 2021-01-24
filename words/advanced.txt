@@ -915,25 +915,26 @@ Gerichtsgebäude
 Urlaub
 Schornsteinfeger
 Parkschein
-Schlüssel-Zitronenkuchen
+Zitronenkuchen
+Mugcake
 Bauarbeiter
 Feldtor
 Pinata
-Ammenhai
+Hammerhai
 Vampir
 Korkenzieher
 Pilger
 Venedig
 Elch
 Bildband
-Dill-Gurke
+Dill-Gurke-Salat
 Foulball
 Riesentintenfisch
 Klapperschlange
 Zebra
 Gurke
 Gottesanbeterin
-Fernfahrerlokal
+Fernfahrbus
 Einzelner Ranger
 Minirock
 Überzieher
@@ -985,7 +986,8 @@ Pinzette
 Vogelhaus
 Toilettenpapier
 Pilze
-New Jersey
+Bayern
+Sachsen
 Catnap
 Fahrgemeinschaft
 Hollywood
@@ -994,9 +996,9 @@ Straßenecke
 Dicke Katze
 Busfahrer
 Zuckermais
-Capitol-Hügel
+Brandenburger Tor
 Sommerhaus
-Haustier des Lehrers
+Streber
 Milchmann
 Daumen hoch
 Kingsize
@@ -2076,7 +2078,7 @@ Orgel
 Rede
 Wagenheber
 Schwach
-Spaghetti westlich
+Spaghetti Bolognese
 Schlafwandler
 Giftsumach
 Käsereibe
