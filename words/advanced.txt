@@ -959,7 +959,7 @@ Wasserball
 Schlafsack
 Los Angeles
 Mechaniker
-Makkaroni und Käse
+Käsemakkaroni
 3-d-Brille
 Hampelmann
 Strahlstrom
@@ -1146,15 +1146,16 @@ Haarknäuel
 Barbierstange
 Lachs
 Doggybag
+Packesel
 Rucksack
 Aluminiumfolie
 Dosenöffner
 Roboter
 Kugelsichere Weste
 Fußballfeld
-George washington
+George Washington
 Regenbogenforelle
-Das Fünfeck
+Fünfeck
 Burrito
 Kanu
 Thron
@@ -1387,7 +1388,9 @@ Las Vegas
 Boxenstopp
 Ausgestorben
 Helm
-Erste Basis
+Marsbasis
+Marsrover
+Laser
 Zwischenraum
 Aufblasen
 Postamt
