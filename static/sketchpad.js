@@ -116,6 +116,15 @@ Sketchpad.prototype._mouseDown = function(event) {
   this._currentStroke.size = this.penSize;
   this._currentStroke.lines = [];
   this._sketching = true;
+
+  // Hack to allow players to draw dots by just tapping
+  var currentPosition = this._cursorPosition(event);
+  this._draw(currentPosition, currentPosition, this.color, this.penSize);
+  this._currentStroke.lines.push({
+    start: $.extend(true, {}, currentPosition),
+    end: $.extend(true, {}, currentPosition),
+  });
+
   this.canvas.addEventListener('mousemove', this._mouseMove);
 };
 
@@ -149,6 +158,15 @@ Sketchpad.prototype._touchStart = function(event) {
   this._currentStroke.size = this.penSize;
   this._currentStroke.lines = [];
   this._sketching = true;
+
+  // Hack to allow players to draw dots by just tapping
+  var currentPosition = this._cursorPosition(event.changedTouches[0]);
+  this._draw(currentPosition, currentPosition, this.color, this.penSize);
+  this._currentStroke.lines.push({
+    start: $.extend(true, {}, currentPosition),
+    end: $.extend(true, {}, currentPosition),
+  });
+
   this.canvas.addEventListener('touchmove', this._touchMove, false);
 };
 
