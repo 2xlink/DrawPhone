@@ -157,7 +157,10 @@
         <button class="color_button" onclick="sketchpad1.redo()">
             <i class="fa fa-redo" aria-hidden="true"></i>
         </button>
+        <div id="drawing_palette_container" style="float:left; cursor:crosshair;">
+            <canvas id="drawing_palette" width="512" height="128" style="border-width:thin; border-style:solid;"></canvas>
         </div>
+    </div>
     <button id="button_send_image" class="button button_send" disabled onclick=sendImage()>Send</button>
 </div>
 

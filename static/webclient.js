@@ -57,6 +57,7 @@ var choice_task_custom = document.getElementById("choice_task_custom")
 var color_buttons = document.querySelectorAll(".color_button[data-color]")
 var stroke_size_buttons = document.querySelectorAll(".color_button[data-stroke-size]")
 var div_room_id = document.getElementById("room_id")
+var palette = document.getElementById("drawing_palette")
 
 body = document.body
 body.style.width = vw + "px"
@@ -641,5 +642,35 @@ function wordlist_change() {
         custom_wordlist_div.style.display = "none"
     }
 }
+
+// Palette color picking
+palette.onmousemove = function(e) {
+console.log("onmousemove = function(e) {")
+    var x = e.pageX - $(this).offset().left;
+    var y = e.pageY - $(this).offset().top;
+    palette.latestX = x;
+    palette.latestY = y;
+
+    if(palette.isPicking) {
+        data = palette.context.getImageData(palette.latestX, palette.latestY, 1, 1).data;
+        setCurrentColor("#" + intToHex(data[0]) + intToHex(data[1]) + intToHex(data[2]));
+        palette.render();
+    }
+};
+palette.onmousedown = function(e) {
+console.log("onmousedown = function(e) {")
+    palette.isPicking = true;
+    data = palette.context.getImageData(palette.latestX, palette.latestY, 1, 1).data;
+    setCurrentColor("#" + intToHex(data[0]) + intToHex(data[1]) + intToHex(data[2]));
+    palette.render();
+};
+palette.onmouseup = function(e) {
+console.log("onmouseup = function(e) {")
+    palette.isPicking = false;
+};
+palette.onmouseout = function(e) {
+console.log("onmouseout = function(e) {")
+    palette.isPicking = false;
+};
 
 setup_client()
