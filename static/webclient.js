@@ -574,12 +574,12 @@ function startGame() {
         chosen_first_task = 2
     }
 
-    document.cookie = "timeout=" + timeout
-    document.cookie = "round_count=" + round_count
-    document.cookie = "wordlist_chosen=" + wordlist_chosen
-    document.cookie = "custom_words=" + custom_words
-    document.cookie = "allow_history_logging=" + allow_history_logging
-    document.cookie = "chosen_first_task=" + chosen_first_task
+    document.cookie = "timeout=" + timeout + "; max-age=" + 60*60*24*365
+    document.cookie = "round_count=" + round_count + "; max-age=" + 60*60*24*365
+    document.cookie = "wordlist_chosen=" + wordlist_chosen + "; max-age=" + 60*60*24*365
+    document.cookie = "custom_words=" + custom_words + "; max-age=" + 60*60*24*365
+    document.cookie = "allow_history_logging=" + allow_history_logging + "; max-age=" + 60*60*24*365
+    document.cookie = "chosen_first_task=" + chosen_first_task + "; max-age=" + 60*60*24*365
 
     if (chosen_first_task == 1) {
         round_count = Math.floor((data["players"][1].length - 1) / 2) * 2 + 1
