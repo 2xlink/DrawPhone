@@ -88,6 +88,12 @@ function show_player_list() {
         d = document.createElement("div")
         d.classList.add("player", "minor_text_element")
         d.innerText = p[0]
+
+        // Mockup button
+        e = document.createElement("div")
+        e.classList.add("list_button")
+        d.appendChild(e)
+
         div_presenter_playing_player_list_ready.appendChild(d)
     })
 
@@ -95,7 +101,34 @@ function show_player_list() {
         d = document.createElement("div")
         d.classList.add("player", "minor_text_element")
         d.innerText = p[0]
+
+        // Rumble button
+        e = document.createElement("div")
+        e.classList.add("fas", "fa-bell", "list_button")
+
+        d.addEventListener("click", function() {
+            console.log("Rumble " + p)
+            ret = {
+                "token": getCookie("token"),
+                "room_id": findGetParameter("room_id"),
+                "command": "rumble_player",
+                "id": p[1]
+            }
+            ws.send(JSON.stringify(ret))
+        });
+
+        d.appendChild(e)
+
         div_presenter_playing_player_list_not_ready.appendChild(d)
+
+        if (p[2] == true){
+            (function(d) {
+                d.classList.add("shake", "shake-constant")
+                setTimeout(function(){
+                    d.classList.remove("shake-constant", "shake")
+                }, 100);
+            }(d))
+        }
     })
 
     div_presenter_playing_title.innerText =
@@ -137,9 +170,6 @@ function show_pregame_player_list() {
                 });
 
                 d.appendChild(e)
-            }
-            else {
-
             }
         }
         else {
@@ -246,6 +276,13 @@ ws.onmessage = function (evt) {
 
     else if (command == "kicked") {
         location = "/"
+    }
+
+    else if (command == "rumble") {
+        body.classList.add("shake", "shake-constant")
+        setTimeout(function(){
+            body.classList.remove("shake", "shake-constant")
+        }, 100);
     }
 
     // game update

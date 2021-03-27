@@ -88,6 +88,7 @@ p {
     height: 20px;
     float: right;
     cursor: pointer;
+    color: var(--font-dark);
 }
 
 .button_kick {
@@ -95,7 +96,7 @@ p {
 }
 
 .button_edit {
-    color: var(--font-dark);
+    /* color: var(--font-dark); */
 }
 
 .button_like {
@@ -290,4 +291,8 @@ animation: fadeOut ease 2s;
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+.my-custom-shake {
+    @include do-shake('shake-crazy', 40, 40, 20, 100ms, .1, $opacity: true);
 }
