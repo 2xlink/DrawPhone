@@ -634,10 +634,7 @@ def get_latest_commits():
 
     latest_commits = \
         [
-            "Adds a like button to the history. Liked prompts may be included in the future.",
-            "Forms can now be sent with the return key",
-            "Added rename and kick functions.",
-            "(Hopefully) fixed history sync."
+            "Added rumble button for impatient players"
         ]
     logging.debug(f"Got latest commits: {latest_commits}")
 
