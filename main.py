@@ -634,6 +634,7 @@ def get_latest_commits():
 
     latest_commits = \
         [
+            "Adds color picker when you double click",
             "Added rumble button for impatient players"
         ]
     logging.debug(f"Got latest commits: {latest_commits}")
