@@ -431,6 +431,7 @@ function setup_client() {
             lockOpacity: true,
             comparison: false,
             defaultRepresentation: 'HEX',
+            disabled: true,
 
             components: {
                 // Main components
@@ -466,6 +467,9 @@ function setup_client() {
         }).on('swatchselect', (color, instance) => {
             console.log('Event: "swatchselect"', color, instance);
         });
+
+        element.pickr = pickr
+        element.pickr_clicked = false
     }
 }
 
@@ -550,21 +554,29 @@ function sendFirstPrompt(chose_computer_supplied) {
 
 function change_stroke_color(element) {
     const color = element.dataset.color;
+    previously_clicked = false
+    if (Array.from(element.classList).includes("focus")) previously_clicked = true
     update_button_focus(element, color_buttons);
     sketchpad1.color = '#' + color
+
+    if (previously_clicked) {
+        element.pickr.enable()
+    }
 }
 
 function change_stroke_size(element) {
     const size = element.dataset.strokeSize;
-
     update_button_focus(element, stroke_size_buttons);
-
     sketchpad1.penSize = size
 }
 
 function update_button_focus(element, siblings) {
     Array.from(siblings).forEach(sibling => {
         sibling.classList.remove("focus");
+        try {
+            sibling.pickr.disable()
+        }
+        catch (ex) { }
     })
 
     element.classList.add("focus");
