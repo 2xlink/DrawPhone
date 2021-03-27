@@ -110,23 +110,6 @@ function show_pregame_player_list() {
 
         d.innerText = p[0]
 
-        if (is_presenter && p[1] != getCookie("id")) {
-            e = document.createElement("div")
-            e.classList.add("fa", "fa-times", "list_button", "button_kick")
-            e.addEventListener("click", function() {
-                console.log("Kick player " + p)
-                ret = {
-                    "token": getCookie("token"),
-                    "room_id": findGetParameter("room_id"),
-                    "command": "kick_player",
-                    "id": p[1]
-                }
-                ws.send(JSON.stringify(ret))
-            });
-
-            d.appendChild(e)
-        }
-
         if (p[1] == getCookie("id")) {
             e = document.createElement("div")
             e.classList.add("fas", "fa-pen", "list_button", "button_edit")
@@ -135,14 +118,44 @@ function show_pregame_player_list() {
                 deleteCookie("name")
                 location.reload()
             });
+            d.appendChild(e)
         }
-        else {
-            if (!is_presenter) {
+
+        if (is_presenter) {
+            if (p[1] != getCookie("id")) {
                 e = document.createElement("div")
-                e.classList.add("list_button")
+                e.classList.add("fa", "fa-times", "list_button", "button_kick")
+                e.addEventListener("click", function() {
+                    console.log("Kick player " + p)
+                    ret = {
+                        "token": getCookie("token"),
+                        "room_id": findGetParameter("room_id"),
+                        "command": "kick_player",
+                        "id": p[1]
+                    }
+                    ws.send(JSON.stringify(ret))
+                });
+
+                d.appendChild(e)
+            }
+            else {
+
             }
         }
-        d.appendChild(e)
+        else {
+            if (data["presenter_id"] == p[1]) {
+                e = document.createElement("div")
+                e.classList.add("fa", "fa-crown")
+                e.classList.add("list_button")
+                d.appendChild(e)
+            }
+        }
+
+        if (d.childElementCount <= 0) {
+            e = document.createElement("div")
+            e.classList.add("list_button")
+            d.appendChild(e)
+        }
 
         div_presenter_pre_game_player_list.appendChild(d)
     })

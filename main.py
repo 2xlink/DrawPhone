@@ -198,7 +198,8 @@ def update_game_status(room: Room, extra_obj=None, token=""):
         ],
         "round_count": room.round_count,
         "max_rounds": room.max_rounds,
-        "timeout": room.timeout
+        "timeout": room.timeout,
+        "presenter_id": room.presenter.id
     }
     message = {**message, **extra_obj}
 
