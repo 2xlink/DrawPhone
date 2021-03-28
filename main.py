@@ -38,7 +38,7 @@ class Player:
         self.image = None
         self.is_ready = False
         self.id = id
-        self.rumbles = False
+        self.last_rumbled = datetime.datetime.now()
 
     def __repr__(self) -> str:
         return f"Player: Name: {self.name}, Prompt: {self.prompt}, Token: {self.token}, " \
@@ -184,8 +184,12 @@ def update_game_status(room: Room, extra_obj=None, token=""):
     if extra_obj is None:
         extra_obj = {}
 
-    players_ready = [[p.name, p.id, p.rumbles] for p in room.players if p.is_ready]
-    players_unready = [[p.name, p.id, p.rumbles] for p in room.players if not p.is_ready]
+    players_ready = [[p.name, p.id,
+                      p.last_rumbled >= datetime.datetime.now() - datetime.timedelta(milliseconds=100)
+                      ] for p in room.players if p.is_ready]
+    players_unready = [[p.name, p.id,
+                        p.last_rumbled >= datetime.datetime.now() - datetime.timedelta(milliseconds=100)
+                        ] for p in room.players if not p.is_ready]
     players_ready.sort()
     players_unready.sort()
     logging.warning(players_ready)
@@ -409,14 +413,11 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                     for p in room.players:
                         if p.id == parsed["id"]:
                             logging.info(f"Rumbling player {p}")
-                            p.rumbles = True
+                            p.last_rumbled = datetime.datetime.now()
                             message = {"command": "rumble"}
                             update_current_task(room, p.token, message)
 
                 update_game_status(room)
-
-                for p in room.players:
-                    p.rumbles = False
 
                 # Ignore other commands
                 return
