@@ -122,12 +122,12 @@ function show_player_list() {
 
         div_presenter_playing_player_list_not_ready.appendChild(d)
 
-        if (p[2] == true){
+        if (p[2] > 0){
             (function(d) {
                 d.classList.add("shake", "shake-constant")
                 setTimeout(function(){
                     d.classList.remove("shake-constant", "shake")
-                }, 100);
+                }, p[2]);
             }(d))
         }
     })

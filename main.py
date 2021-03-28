@@ -9,6 +9,7 @@ import json
 import os.path
 import uuid
 import logging
+import math
 from urllib.parse import quote, unquote
 
 import tornado.escape
@@ -184,12 +185,20 @@ def update_game_status(room: Room, extra_obj=None, token=""):
     if extra_obj is None:
         extra_obj = {}
 
-    players_ready = [[p.name, p.id,
-                      p.last_rumbled >= datetime.datetime.now() - datetime.timedelta(milliseconds=100)
-                      ] for p in room.players if p.is_ready]
-    players_unready = [[p.name, p.id,
-                        p.last_rumbled >= datetime.datetime.now() - datetime.timedelta(milliseconds=100)
-                        ] for p in room.players if not p.is_ready]
+    players_ready = []
+    players_unready = []
+
+    for p in room.players:
+        rumble_timedelta = datetime.datetime.now() - p.last_rumbled
+        rumble_timeout_ms = max(100 - math.floor(
+            (rumble_timedelta.microseconds + rumble_timedelta.seconds * 1000000)/ 1000
+        ), 0)
+
+        if p.is_ready:
+            players_ready.append([p.name, p.id, rumble_timeout_ms])
+        else:
+            players_unready.append([p.name, p.id, rumble_timeout_ms])
+
     players_ready.sort()
     players_unready.sort()
     logging.warning(players_ready)
