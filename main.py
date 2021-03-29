@@ -191,7 +191,7 @@ def update_game_status(room: Room, extra_obj=None, token=""):
     for p in room.players:
         rumble_timedelta = datetime.datetime.now() - p.last_rumbled
         rumble_timeout_ms = max(100 - math.floor(
-            (rumble_timedelta.microseconds + rumble_timedelta.seconds * 1000000)/ 1000
+            (rumble_timedelta.total_seconds() * 1000)
         ), 0)
 
         if p.is_ready:
