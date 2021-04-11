@@ -454,15 +454,15 @@ function setup_client() {
         });
 
         pickr.on('init', instance => {
-            console.log('Event: "init"', instance);
+//            console.log('Event: "init"', instance);
         }).on('hide', instance => {
-            console.log('Event: "hide"', instance);
+//            console.log('Event: "hide"', instance);
         }).on('show', (color, instance) => {
-            console.log('Event: "show"', color, instance);
+//            console.log('Event: "show"', color, instance);
         }).on('save', (color, instance) => {
-            console.log('Event: "save"', color, instance);
+//            console.log('Event: "save"', color, instance);
         }).on('clear', instance => {
-            console.log('Event: "clear"', instance);
+//            console.log('Event: "clear"', instance);
         }).on('change', (color, source, instance) => {
             console.log('Event: "change"', color, source, instance);
             chosen_color = instance.getColor().toHEXA().join("")
@@ -471,11 +471,11 @@ function setup_client() {
             sketchpad1.color = '#' + chosen_color
 
         }).on('changestop', (source, instance) => {
-            console.log('Event: "changestop"', source, instance);
+//            console.log('Event: "changestop"', source, instance);
         }).on('cancel', instance => {
-            console.log('Event: "cancel"', instance);
+//            console.log('Event: "cancel"', instance);
         }).on('swatchselect', (color, instance) => {
-            console.log('Event: "swatchselect"', color, instance);
+//            console.log('Event: "swatchselect"', color, instance);
         });
 
         element.pickr = pickr
