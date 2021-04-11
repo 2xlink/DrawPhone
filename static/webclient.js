@@ -237,7 +237,7 @@ ws.onmessage = function (evt) {
     }
     else if (command == "general_update" && !is_busy) {
         div_presenter_pre_game.style.display = "none"
-        div_presenter_playing.style.display = "unset"
+        div_presenter_playing.style.display = "inherit"
 
         div_presenter_playing_player_list_ready.innerHTML = ""
         div_presenter_playing_player_list_not_ready.innerHTML = ""
@@ -264,7 +264,7 @@ ws.onmessage = function (evt) {
     }
     else if (command == "show_histories") {
         div_loader.style.display = "none"
-        div_presenter_post_game.style.display = "unset"
+        div_presenter_post_game.style.display = "inherit"
         show_histories(histories)
     }
 
@@ -280,9 +280,19 @@ ws.onmessage = function (evt) {
     }
 
     else if (command == "rumble") {
-        body.classList.add("shake", "shake-constant")
+        Array.from(div_draw.children).forEach(e => {
+            e.classList.add("shake", "shake-constant")
+        })
+        Array.from(div_prompt.children).forEach(e => {
+            e.classList.add("shake", "shake-constant")
+        })
         setTimeout(function(){
-            body.classList.remove("shake", "shake-constant")
+            Array.from(div_draw.children).forEach(e => {
+                e.classList.remove("shake", "shake-constant")
+            })
+            Array.from(div_prompt.children).forEach(e => {
+                e.classList.remove("shake", "shake-constant")
+            })
         }, 100);
     }
 
@@ -331,7 +341,7 @@ ws.onmessage = function (evt) {
         }
 
         if ("prompt" in data) {
-            div_draw.style.display = "unset"
+            div_draw.style.display = "inherit"
             prompt_supplied.innerText = data["prompt"]
 
             button_send_image.disabled = true
@@ -346,7 +356,7 @@ ws.onmessage = function (evt) {
             }
         }
         else if ("image" in data) {
-            div_prompt.style.display = "unset"
+            div_prompt.style.display = "inherit"
             png_data = data["image"]
             sketchpad_supplied.setAttribute(
                 'src', png_data
@@ -361,7 +371,7 @@ ws.onmessage = function (evt) {
             }
         }
         else if ("computer_supplied_prompt" in data) {
-            div_submit_first_prompt.style.display = "unset"
+            div_submit_first_prompt.style.display = "inherit"
             computer_supplied_prompt = data["computer_supplied_prompt"]
         }
     }
