@@ -134,7 +134,7 @@ class MainHandler(tornado.web.RequestHandler):
                 return
             name = unquote(quote(name, encoding='iso8859-1'), encoding='utf-8')
             logging.debug(f"Supplied name: {name}")
-            name = re.sub('[^a-zA-Z0-9äöüß]', '', name)
+            name = re.sub('[^a-zA-Z0-9äöüß ]', '', name)
 
             # If room does not exist, create it and set requester to presenter
             if room_id not in rooms:
